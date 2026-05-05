@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rechteck & Quadrat – Affe klettert zum Baum</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:  #1D9E75;
+    --green2: #0F6E56;
+    --red:    #E24B4A;
+    --bg:     #f0ede6;
+    --card:   #ffffff;
+    --border: #dedad2;
+    --text:   #1a1a1a;
+    --muted:  #888780;
+    --bark:   #A0631A;
+  }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+
+  #difficulty-badge {
+    display: inline-block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 14px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+  }
+  .diff-1 { background:#e1f5ee; color:#0F6E56; }
+  .diff-2 { background:#e8f0fb; color:#1a4fa0; }
+  .diff-3 { background:#faeeda; color:#633806; }
+  .diff-4 { background:#fde8cc; color:#7a3500; }
+  .diff-5 { background:#fcebeb; color:#791F1F; }
+
+  #game {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    max-width: 740px;
+    align-items: flex-start;
+  }
+
+  #left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  #right { width: 220px; flex-shrink: 0; }
+
+  #question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px 18px;
+    text-align: center;
+  }
+
+  #question-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  #question {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.4;
+    min-height: 36px;
+  }
+
+  /* ── MC Buttons ── */
+  #mc-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .mc-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: #fafaf8;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .mc-btn:hover { border-color: var(--green); background: #f0faf6; }
+  .mc-btn.selected { border-color: var(--green); background: #e1f5ee; }
+  .mc-btn.correct  { border-color: var(--green); background: #c6f0df; }
+  .mc-btn.wrong    { border-color: var(--red);   background: #fde8e8; }
+
+  /* ── Calc input ── */
+  #calc-section { display: none; flex-direction: column; align-items: center; gap: 10px; }
+
+  .input-with-unit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #calc-input {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    width: 130px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 4px;
+    background: #fafaf8;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #calc-input:focus { border-color: var(--green); }
+
+  .unit-picker {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .unit-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: #fafaf8;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .unit-btn:hover   { border-color: var(--green); background: #f0faf6; }
+  .unit-btn.active  { border-color: var(--green); background: #e1f5ee; }
+
+  #submit-btn {
+    margin-top: 6px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 9px 28px;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.1s;
+    display: none;
+  }
+  #submit-btn:hover  { background: var(--green2); }
+  #submit-btn:active { transform: scale(0.97); }
+
+  #feedback {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    min-height: 22px;
+    margin-top: 8px;
+  }
+  .fb-ok  { color: var(--green); }
+  .fb-err { color: var(--red); }
+
+  /* ── Stats ── */
+  .stats-row { display: flex; gap: 10px; }
+  .stat-card {
+    flex: 1;
+    background: #eae8e2;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-val {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+  }
+
+  #banana-bar { background: #eae8e2; border-radius: 8px; padding: 10px 14px; }
+  .bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  #bananas-row { display: flex; align-items: center; gap: 4px; }
+  .banana-icon { font-size: 20px; filter: grayscale(1) opacity(0.3); transition: filter 0.4s; }
+  .banana-icon.earned { filter: none; }
+  #progress-bar-wrap { flex:1; background:#c8c5bc; border-radius:99px; height:7px; overflow:hidden; margin-left:6px; }
+  #progress-bar { height:100%; background:var(--green); border-radius:99px; width:0%; transition:width 0.5s; }
+
+  #hint-box {
+    background: #fffbf0;
+    border: 1px solid #f0d890;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #633806;
+    line-height: 1.6;
+  }
+  #hint-box strong { font-weight: 700; }
+
+  /* ── End screen ── */
+  #end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+  }
+  #end-screen .big-emoji { font-size: 64px; }
+  #end-screen h2 { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; }
+  #end-screen p  { color:var(--muted); font-size:15px; }
+  #restart-btn {
+    font-family:'Nunito',sans-serif; font-size:15px; font-weight:700;
+    padding:12px 30px; cursor:pointer; background:var(--green);
+    color:#fff; border:none; border-radius:8px;
+  }
+  #restart-btn:hover { background:var(--green2); }
+</style>
+</head>
+<body>
+
+<h1>🔷 Rechteck &amp; Quadrat</h1>
+<p class="subtitle">Hilf dem Affen, alle 5 Bananen zu holen!</p>
+<div id="difficulty-badge" class="diff-1">Runde 1</div>
+
+<div id="game">
+  <div id="left">
+
+    <div id="question-card">
+      <div id="question-label">Aufgabe</div>
+      <div id="question">Lädt…</div>
+
+      <!-- Multiple Choice -->
+      <div id="mc-options"></div>
+
+      <!-- Rechnen -->
+      <div id="calc-section">
+        <div class="input-with-unit">
+          <input id="calc-input" type="number" step="any" autocomplete="off" placeholder="?" />
+        </div>
+        <div class="unit-picker" id="unit-picker"></div>
+        <button id="submit-btn" onclick="submitCalc()">Prüfen ✓</button>
+      </div>
+
+      <div id="feedback"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Richtig</div>
+        <div class="stat-val" id="score-ok"  style="color:var(--green)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Falsch</div>
+        <div class="stat-val" id="score-err" style="color:var(--red)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runde</div>
+        <div class="stat-val" id="round-display">1 / 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Stufe</div>
+        <div class="stat-val" id="level-display">🌱</div>
+      </div>
+    </div>
+
+    <div id="banana-bar">
+      <div class="bar-label">Gesammelte Bananen</div>
+      <div id="bananas-row">
+        <span class="banana-icon" id="b0">🍌</span>
+        <span class="banana-icon" id="b1">🍌</span>
+        <span class="banana-icon" id="b2">🍌</span>
+        <span class="banana-icon" id="b3">🍌</span>
+        <span class="banana-icon" id="b4">🍌</span>
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="hint-box">
+      <strong>💡 Merkhilfe:</strong><br>
+      Umfang Rechteck: U = (a + b) × 2<br>
+      Umfang Quadrat: U = a × 4<br>
+      Fläche Rechteck: A = a × b<br>
+      Fläche Quadrat: A = a × a
+    </div>
+
+  </div>
+
+  <div id="right">
+    <svg id="tree-svg" width="220" height="570" viewBox="0 0 220 570"
+         xmlns="http://www.w3.org/2000/svg" aria-label="Baum mit Affe"></svg>
+  </div>
+</div>
+
+<div id="end-screen">
+  <div class="big-emoji">🍌🐒🍌</div>
+  <h2>Der Affe ist satt!</h2>
+  <p id="end-stats"></p>
+  <button id="restart-btn" onclick="initGame()">Nochmal spielen</button>
+</div>
+
+<script>
+/* ==========================================================
+   AUFGABEN
+   Typen:
+     mc   → Multiple Choice  { type:'mc', q, options:[{label,correct}] }
+     calc → Rechnen          { type:'calc', q, answer, units:['cm','cm²',...], correctUnit }
+========================================================== */
+
+const POOL_R1 = [ /* Leicht: reine Eigenschaften MC */
+  {type:'mc', q:'Ein Quadrat hat …', options:[{l:'2 Seiten',c:false},{l:'4 gleich lange Seiten',c:true},{l:'3 Seiten',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat …', options:[{l:'4 rechte Winkel',c:true},{l:'2 rechte Winkel',c:false},{l:'keinen rechten Winkel',c:false}]},
+  {type:'mc', q:'Beim Quadrat sind die Seiten …', options:[{l:'alle gleich lang',c:true},{l:'unterschiedlich',c:false},{l:'nur gegenüber gleich',c:false}]},
+  {type:'mc', q:'Beim Rechteck sind gegenüberliegende Seiten …', options:[{l:'gleich lang',c:true},{l:'unterschiedlich',c:false},{l:'rund',c:false}]},
+  {type:'mc', q:'Ein Quadrat ist auch ein …', options:[{l:'Kreis',c:false},{l:'Rechteck',c:true},{l:'Dreieck',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat … Ecken', options:[{l:'3',c:false},{l:'4',c:true},{l:'5',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … Ecken', options:[{l:'4',c:true},{l:'6',c:false},{l:'8',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat … gleich lange Seiten', options:[{l:'alle',c:false},{l:'keine',c:false},{l:'je 2 gegenüberliegende',c:true}]},
+  {type:'mc', q:'Alle Winkel im Quadrat sind …', options:[{l:'spitz',c:false},{l:'rechtwinklig',c:true},{l:'stumpf',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat …', options:[{l:'2 lange und 2 kurze Seiten',c:true},{l:'4 gleich lange Seiten',c:false},{l:'3 lange Seiten',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … lange Seiten', options:[{l:'2',c:false},{l:'4 gleich lange',c:true},{l:'keine',c:false}]},
+  {type:'mc', q:'Ein Rechteck ist …', options:[{l:'rund',c:false},{l:'ein Viereck',c:true},{l:'ein Dreieck',c:false}]},
+  {type:'mc', q:'Ein Quadrat ist …', options:[{l:'ein Viereck',c:true},{l:'ein Kreis',c:false},{l:'ein Dreieck',c:false}]},
+  {type:'mc', q:'Alle Winkel im Rechteck sind …', options:[{l:'rechtwinklig',c:true},{l:'spitz',c:false},{l:'verschieden',c:false}]},
+  {type:'mc', q:'Ein Quadrat ist ein besonderes …', options:[{l:'Rechteck',c:true},{l:'Dreieck',c:false},{l:'Kreis',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat … Winkel', options:[{l:'3',c:false},{l:'4',c:true},{l:'5',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … rechte Winkel', options:[{l:'2',c:false},{l:'4',c:true},{l:'1',c:false}]},
+  {type:'mc', q:'Ein Rechteck kann …', options:[{l:'lange und kurze Seiten haben',c:true},{l:'nur gleich lange Seiten haben',c:false},{l:'keine Seiten haben',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … Seiten', options:[{l:'3',c:false},{l:'4',c:true},{l:'5',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat … Seiten', options:[{l:'4',c:true},{l:'5',c:false},{l:'6',c:false}]},
+];
+
+const POOL_R2 = [ /* Leicht-Mittel: Beschriftung + einfache MC */
+  {type:'mc', q:'Wie nennt man die Ecken eines Rechtecks?', options:[{l:'A, B, C, D',c:true},{l:'1, 2, 3',c:false},{l:'x, y',c:false}]},
+  {type:'mc', q:'Wie werden Seiten meist bezeichnet?', options:[{l:'a und b',c:true},{l:'x und y',c:false},{l:'1 und 2',c:false}]},
+  {type:'mc', q:'Welche Seiten sind gleich lang im Rechteck?', options:[{l:'alle',c:false},{l:'gegenüberliegende',c:true},{l:'keine',c:false}]},
+  {type:'mc', q:'Welche Seiten sind gleich lang im Quadrat?', options:[{l:'alle',c:true},{l:'nur zwei',c:false},{l:'keine',c:false}]},
+  {type:'mc', q:'Wie viele rechte Winkel hat ein Rechteck?', options:[{l:'2',c:false},{l:'4',c:true},{l:'1',c:false}]},
+  {type:'mc', q:'Wie viele rechte Winkel hat ein Quadrat?', options:[{l:'4',c:true},{l:'2',c:false},{l:'3',c:false}]},
+  {type:'mc', q:'Wie nennt man die Linien von Ecke zu Ecke?', options:[{l:'Seiten',c:false},{l:'Diagonalen',c:true},{l:'Kanten',c:false}]},
+  {type:'mc', q:'Was sind Diagonalen?', options:[{l:'Linien von Ecke zu Ecke',c:true},{l:'Außenlinien',c:false},{l:'Kreise',c:false}]},
+  {type:'mc', q:'Welche Seiten sind parallel im Rechteck?', options:[{l:'gegenüberliegende',c:true},{l:'alle',c:false},{l:'keine',c:false}]},
+  {type:'mc', q:'Welche Seiten sind parallel im Quadrat?', options:[{l:'gegenüberliegende',c:true},{l:'keine',c:false},{l:'nur eine',c:false}]},
+  {type:'mc', q:'Was ist die Länge eines Rechtecks?', options:[{l:'die längere Seite',c:true},{l:'die kürzere Seite',c:false},{l:'keine',c:false}]},
+  {type:'mc', q:'Was ist die Breite eines Rechtecks?', options:[{l:'die kürzere Seite',c:true},{l:'die längere Seite',c:false},{l:'keine',c:false}]},
+  {type:'mc', q:'Gegenüberliegende Seiten im Rechteck sind …', options:[{l:'gleich lang',c:true},{l:'rund',c:false},{l:'schief',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … gleich lange Seiten', options:[{l:'2',c:false},{l:'3',c:false},{l:'4',c:true}]},
+  {type:'mc', q:'Ein Rechteck ist ein …', options:[{l:'Viereck',c:true},{l:'Kreis',c:false},{l:'Fünfeck',c:false}]},
+  {type:'mc', q:'Ein Quadrat hat … Seiten', options:[{l:'3',c:false},{l:'4',c:true},{l:'5',c:false}]},
+  {type:'mc', q:'Wie viele Seiten hat ein Rechteck?', options:[{l:'4',c:true},{l:'5',c:false},{l:'6',c:false}]},
+  {type:'mc', q:'Ein Quadrat ist ein besonderes Rechteck – weil …', options:[{l:'alle Seiten gleich lang sind',c:true},{l:'es 3 Seiten hat',c:false},{l:'es rund ist',c:false}]},
+  {type:'mc', q:'Ein Rechteck hat immer … Winkel', options:[{l:'4 rechte',c:true},{l:'2 spitze',c:false},{l:'3 stumpfe',c:false}]},
+  {type:'mc', q:'Was unterscheidet Quadrat vom Rechteck?', options:[{l:'Beim Quadrat sind alle Seiten gleich lang',c:true},{l:'Das Quadrat hat mehr Ecken',c:false},{l:'Das Quadrat hat keine Winkel',c:false}]},
+];
+
+const POOL_R3 = [ /* Mittel: Umfang einfach */
+  {type:'calc', q:'Rechteck: a = 4 cm, b = 6 cm\nUmfang U = ?', answer:20, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 3 cm, b = 5 cm\nUmfang U = ?', answer:16, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 7 cm, b = 2 cm\nUmfang U = ?', answer:18, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 8 cm, b = 4 cm\nUmfang U = ?', answer:24, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 10 cm, b = 2 cm\nUmfang U = ?', answer:24, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 3 cm\nUmfang U = ?', answer:12, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 5 cm\nUmfang U = ?', answer:20, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 7 cm\nUmfang U = ?', answer:28, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 9 cm\nUmfang U = ?', answer:36, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 12 cm\nUmfang U = ?', answer:48, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 12 m, b = 5 m\nUmfang U = ?', answer:34, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Rechteck: a = 20 m, b = 10 m\nUmfang U = ?', answer:60, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Rechteck: a = 15 m, b = 6 m\nUmfang U = ?', answer:42, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Rechteck: a = 25 m, b = 4 m\nUmfang U = ?', answer:58, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Quadrat: a = 15 m\nUmfang U = ?', answer:60, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Quadrat: a = 20 m\nUmfang U = ?', answer:80, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Quadrat: a = 25 m\nUmfang U = ?', answer:100, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Quadrat: a = 50 m\nUmfang U = ?', answer:200, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Quadrat: a = 100 m\nUmfang U = ?', answer:400, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Rechteck: a = 2,5 cm, b = 4,5 cm\nUmfang U = ?', answer:14, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+];
+
+const POOL_R4 = [ /* Mittel-Schwer: Fläche */
+  {type:'calc', q:'Rechteck: a = 4 cm, b = 6 cm\nFläche A = ?', answer:24, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Rechteck: a = 3 cm, b = 5 cm\nFläche A = ?', answer:15, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Rechteck: a = 7 cm, b = 2 cm\nFläche A = ?', answer:14, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Rechteck: a = 8 cm, b = 4 cm\nFläche A = ?', answer:32, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Rechteck: a = 10 cm, b = 2 cm\nFläche A = ?', answer:20, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Quadrat: a = 3 cm\nFläche A = ?', answer:9, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Quadrat: a = 5 cm\nFläche A = ?', answer:25, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Quadrat: a = 7 cm\nFläche A = ?', answer:49, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Quadrat: a = 9 cm\nFläche A = ?', answer:81, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Quadrat: a = 12 cm\nFläche A = ?', answer:144, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Rechteck: a = 12 m, b = 5 m\nFläche A = ?', answer:60, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Rechteck: a = 20 m, b = 10 m\nFläche A = ?', answer:200, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Rechteck: a = 15 m, b = 6 m\nFläche A = ?', answer:90, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Rechteck: a = 25 m, b = 4 m\nFläche A = ?', answer:100, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Rechteck: a = 30 m, b = 3 m\nFläche A = ?', answer:90, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Quadrat: a = 15 m\nFläche A = ?', answer:225, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Quadrat: a = 20 m\nFläche A = ?', answer:400, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Quadrat: a = 25 m\nFläche A = ?', answer:625, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Quadrat: a = 50 m\nFläche A = ?', answer:2500, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Quadrat: a = 100 m\nFläche A = ?', answer:10000, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+];
+
+const POOL_R5 = [ /* Schwer: Sachaufgaben + Rückwärtsrechnen */
+  {type:'calc', q:'Ein Garten ist 10 m lang und 5 m breit.\nWie groß ist die Fläche?', answer:50, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Teppich ist 4 m × 3 m groß.\nWie groß ist er?', answer:12, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Quadrat hat Seitenlänge 6 m.\nWie groß ist die Fläche?', answer:36, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Zaun um ein Feld: 8 m × 5 m.\nWie lang ist der Zaun (Umfang)?', answer:26, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Ein Quadrat mit 10 m Seitenlänge.\nWie lang ist der Umfang?', answer:40, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Ein Buch ist 20 cm × 15 cm groß.\nWie groß ist die Fläche?', answer:300, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+  {type:'calc', q:'Ein Tisch ist 2 m × 1 m groß.\nWie groß ist die Fläche?', answer:2, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Spielplatz ist 30 m × 20 m groß.\nWie groß ist die Fläche?', answer:600, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Quadrat hat einen Umfang von 40 cm.\nWie lang ist eine Seite?', answer:10, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Ein Rechteck hat Umfang 20 cm, Länge 6 cm.\nWie lang ist die Breite?', answer:4, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Ein Feld ist 50 m × 10 m groß.\nWie groß ist die Fläche?', answer:500, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Quadrat hat eine Fläche von 36 cm².\nWie lang ist eine Seite?', answer:6, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Ein Rechteck ist 9 cm × 4 cm groß.\nWie groß ist der Umfang?', answer:26, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Ein Zimmer ist 5 m × 4 m groß.\nWie groß ist die Fläche?', answer:20, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Quadrat hat Seitenlänge 8 m.\nWie groß ist die Fläche?', answer:64, units:['cm','m','cm²','m²'], correctUnit:'m²'},
+  {type:'calc', q:'Ein Quadrat hat Seitenlänge 8 m.\nWie groß ist der Umfang?', answer:32, units:['cm','m','cm²','m²'], correctUnit:'m'},
+  {type:'calc', q:'Rechteck: a = 2,5 cm, b = 4,5 cm\nUmfang U = ?', answer:14, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 3,2 cm, b = 1,8 cm\nUmfang U = ?', answer:10, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Quadrat: a = 2,5 cm\nUmfang U = ?', answer:10, units:['cm','m','cm²','m²'], correctUnit:'cm'},
+  {type:'calc', q:'Rechteck: a = 6,5 cm, b = 2,5 cm\nFläche A = ?', answer:16.25, units:['cm','m','cm²','m²'], correctUnit:'cm²'},
+];
+
+const ROUND_POOLS = [POOL_R1, POOL_R2, POOL_R3, POOL_R4, POOL_R5];
+const ROUND_NAMES = ['Eigenschaften 🌱','Beschriftung 🌿','Umfang ⭐','Fläche ⭐⭐','Sachaufgaben 🔥'];
+const ROUND_DIFF  = ['diff-1','diff-2','diff-3','diff-4','diff-5'];
+const LEVEL_ICONS = ['🌱','🌿','⭐','⭐⭐','🔥'];
+
+const STEPS = 10;
+const branchData = [];
+for (let i = 0; i < STEPS; i++) {
+  branchData.push({ y: 510 - i * 46, len: 36 + (i % 4) * 8, dir: (i % 2 === 0) ? 1 : -1 });
+}
+
+let pos, bananasEarned, round, correctTotal, wrongTotal, animating;
+let usedIndices = [];
+let currentQ = null;
+let selectedUnit = null;
+
+/* ── Tree ── */
+function drawTree() {
+  const svg = document.getElementById('tree-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const sky = document.createElementNS(ns,'rect');
+  sky.setAttribute('x','0'); sky.setAttribute('y','0');
+  sky.setAttribute('width','220'); sky.setAttribute('height','570');
+  sky.setAttribute('rx','12'); sky.setAttribute('fill','#eaf6ff');
+  svg.appendChild(sky);
+
+  const trunk = document.createElementNS(ns,'rect');
+  trunk.setAttribute('x','105'); trunk.setAttribute('y','72');
+  trunk.setAttribute('width','18'); trunk.setAttribute('height','460');
+  trunk.setAttribute('rx','8'); trunk.setAttribute('fill','#A0631A');
+  svg.appendChild(trunk);
+
+  branchData.forEach(b => {
+    const br = document.createElementNS(ns,'line');
+    br.setAttribute('x1','114'); br.setAttribute('y1', b.y);
+    br.setAttribute('x2', 114 + b.dir * b.len);
+    br.setAttribute('y2', b.y - 12);
+    br.setAttribute('stroke','#A0631A'); br.setAttribute('stroke-width','5');
+    br.setAttribute('stroke-linecap','round');
+    svg.appendChild(br);
+    const lx = 114 + b.dir * b.len;
+    const ly = b.y - 18;
+    [0,1].forEach(li => {
+      const lf = document.createElementNS(ns,'ellipse');
+      lf.setAttribute('cx', lx + b.dir*(10+li*8)); lf.setAttribute('cy', ly-li*7);
+      lf.setAttribute('rx', li===0?'16':'10'); lf.setAttribute('ry', li===0?'7':'5');
+      lf.setAttribute('fill', li===0?'#5DCAA5':'#1D9E75'); lf.setAttribute('opacity','0.88');
+      svg.appendChild(lf);
+    });
+  });
+
+  [[-34,6],[-22,-2],[-10,-7],[4,-9],[18,-7],[30,-2],[42,6]].forEach(([ox,oy]) => {
+    const e = document.createElementNS(ns,'ellipse');
+    e.setAttribute('cx', 114+ox); e.setAttribute('cy', 76+oy);
+    e.setAttribute('rx','20'); e.setAttribute('ry','10');
+    e.setAttribute('fill','#5DCAA5'); e.setAttribute('opacity','0.92');
+    svg.appendChild(e);
+  });
+
+  const bn = document.createElementNS(ns,'text');
+  bn.setAttribute('x','114'); bn.setAttribute('y','62');
+  bn.setAttribute('text-anchor','middle'); bn.setAttribute('font-size','22');
+  bn.textContent = '🍌'; svg.appendChild(bn);
+
+  const mk = document.createElementNS(ns,'text');
+  mk.setAttribute('id','monkey'); mk.setAttribute('x','114');
+  mk.setAttribute('text-anchor','middle'); mk.setAttribute('font-size','28');
+  mk.textContent = '🐒'; svg.appendChild(mk);
+  updateMonkeyPos();
+}
+
+function getMonkeyY(p) { return p >= STEPS ? 56 : branchData[p].y + 5; }
+function updateMonkeyPos() {
+  const m = document.getElementById('monkey');
+  if (m) m.setAttribute('y', getMonkeyY(pos));
+}
+
+/* ── Question rendering ── */
+function pickQuestion(roundIndex) {
+  const pool = ROUND_POOLS[roundIndex];
+  let idx, tries = 0;
+  do { idx = Math.floor(Math.random() * pool.length); tries++; }
+  while (usedIndices.includes(idx + roundIndex*1000) && tries < 80);
+  usedIndices.push(idx + roundIndex*1000);
+  return pool[idx];
+}
+
+function newQuestion() {
+  currentQ = pickQuestion(round - 1);
+  document.getElementById('question').textContent = currentQ.q;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+  selectedUnit = null;
+
+  if (currentQ.type === 'mc') {
+    showMC(currentQ);
+  } else {
+    showCalc(currentQ);
+  }
+}
+
+function showMC(q) {
+  document.getElementById('mc-options').style.display = 'flex';
+  document.getElementById('mc-options').innerHTML = '';
+  document.getElementById('calc-section').style.display = 'none';
+  document.getElementById('submit-btn').style.display = 'none';
+
+  const labels = ['A', 'B', 'C'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-btn';
+    btn.textContent = labels[i] + ')  ' + opt.l;
+    btn.onclick = () => handleMC(opt.c, btn, q.options);
+    document.getElementById('mc-options').appendChild(btn);
+  });
+}
+
+function handleMC(isCorrect, clickedBtn, options) {
+  if (animating) return;
+  animating = true;
+
+  const allBtns = document.querySelectorAll('.mc-btn');
+  allBtns.forEach((btn, i) => {
+    btn.onclick = null;
+    if (options[i].c) btn.classList.add('correct');
+  });
+  if (!isCorrect) clickedBtn.classList.add('wrong');
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    correctTotal++;
+    document.getElementById('score-ok').textContent = correctTotal;
+    fb.textContent = '✓ Richtig! Der Affe klettert hoch!';
+    fb.className = 'fb-ok';
+    pos = Math.min(pos + 1, STEPS);
+    updateMonkeyPos();
+    if (pos >= STEPS) { setTimeout(celebrateBanana, 600); return; }
+  } else {
+    wrongTotal++;
+    document.getElementById('score-err').textContent = wrongTotal;
+    fb.textContent = '✗ Falsch! Affe fällt runter!';
+    fb.className = 'fb-err';
+    pos = Math.max(pos - 1, 0);
+    updateMonkeyPos();
+  }
+  setTimeout(() => { animating = false; newQuestion(); }, 1200);
+}
+
+function showCalc(q) {
+  document.getElementById('mc-options').style.display = 'none';
+  document.getElementById('mc-options').innerHTML = '';
+  const cs = document.getElementById('calc-section');
+  cs.style.display = 'flex';
+  document.getElementById('submit-btn').style.display = 'inline-block';
+
+  const inp = document.getElementById('calc-input');
+  inp.value = '';
+  setTimeout(() => inp.focus(), 50);
+
+  const picker = document.getElementById('unit-picker');
+  picker.innerHTML = '';
+  q.units.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'unit-btn';
+    btn.textContent = u;
+    btn.onclick = () => {
+      document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedUnit = u;
+    };
+    picker.appendChild(btn);
+  });
+}
+
+function submitCalc() {
+  if (animating) return;
+  const val = parseFloat(document.getElementById('calc-input').value.replace(',','.'));
+  const fb = document.getElementById('feedback');
+
+  if (isNaN(val)) { fb.textContent = 'Bitte eine Zahl eingeben!'; fb.className = 'fb-err'; return; }
+  if (!selectedUnit) { fb.textContent = 'Bitte eine Einheit auswählen!'; fb.className = 'fb-err'; return; }
+
+  const numOk  = Math.abs(val - currentQ.answer) < 0.001;
+  const unitOk = selectedUnit === currentQ.correctUnit;
+  const allOk  = numOk && unitOk;
+
+  animating = true;
+  if (allOk) {
+    correctTotal++;
+    document.getElementById('score-ok').textContent = correctTotal;
+    fb.textContent = '✓ Richtig! Der Affe klettert hoch!';
+    fb.className = 'fb-ok';
+    pos = Math.min(pos + 1, STEPS);
+    updateMonkeyPos();
+    if (pos >= STEPS) { setTimeout(celebrateBanana, 600); return; }
+  } else {
+    wrongTotal++;
+    document.getElementById('score-err').textContent = wrongTotal;
+    const hint = !numOk ? `Richtig: ${currentQ.answer} ${currentQ.correctUnit}` : `Richtige Einheit: ${currentQ.correctUnit}`;
+    fb.textContent = '✗ Falsch! ' + hint + '. Affe fällt runter!';
+    fb.className = 'fb-err';
+    pos = Math.max(pos - 1, 0);
+    updateMonkeyPos();
+  }
+  setTimeout(() => { animating = false; newQuestion(); }, 1200);
+}
+
+/* ── Round / banana logic ── */
+function updateBadge() {
+  const b = document.getElementById('difficulty-badge');
+  b.textContent = 'Runde ' + round + ' – ' + ROUND_NAMES[round-1];
+  b.className = ROUND_DIFF[round-1];
+  document.getElementById('level-display').textContent = LEVEL_ICONS[round-1];
+  document.getElementById('round-display').textContent = round + ' / 5';
+}
+
+function celebrateBanana() {
+  bananasEarned++;
+  const bEl = document.getElementById('b'+(bananasEarned-1));
+  if (bEl) bEl.classList.add('earned');
+  document.getElementById('progress-bar').style.width = (bananasEarned*20)+'%';
+  const fb = document.getElementById('feedback');
+  fb.textContent = '🍌 Banane ' + bananasEarned + ' von 5 geholt!';
+  fb.className = 'fb-ok';
+  if (bananasEarned >= 5) { setTimeout(showEnd, 900); return; }
+  round++;
+  updateBadge();
+  pos = 0;
+  updateMonkeyPos();
+  setTimeout(() => { animating = false; newQuestion(); }, 1400);
+}
+
+function showEnd() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'none';
+  const es = document.getElementById('end-screen');
+  es.style.display = 'flex';
+  es.querySelector('#end-stats').innerHTML =
+    'Du hast <strong>'+correctTotal+'</strong> Aufgaben richtig und <strong>'+wrongTotal+'</strong> falsch beantwortet.';
+}
+
+function initGame() {
+  pos=0; bananasEarned=0; round=1; correctTotal=0; wrongTotal=0; animating=false;
+  usedIndices=[];
+  document.getElementById('score-ok').textContent='0';
+  document.getElementById('score-err').textContent='0';
+  document.getElementById('progress-bar').style.width='0%';
+  for(let i=0;i<5;i++){const b=document.getElementById('b'+i);if(b)b.classList.remove('earned');}
+  document.getElementById('game').style.display='flex';
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('difficulty-badge').style.display='inline-block';
+  updateBadge();
+  drawTree();
+  newQuestion();
+}
+
+document.getElementById('calc-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitCalc();
+});
+
+initGame();
+</script>
+</body>
+</html>

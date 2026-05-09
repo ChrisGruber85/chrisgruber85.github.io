@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physik-Arbeitsblatt: Die elektrische Stromstärke</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --text-color: #2c3e50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: var(--card-bg);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            border-bottom: 2px dashed #bdc3c7;
+            padding-bottom: 20px;
+        }
+        h2 {
+            color: var(--text-color);
+            font-weight: 700;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+        }
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background-color: var(--secondary-color);
+            margin-right: 12px;
+            border-radius: 4px;
+        }
+        .input-group {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #d1e8f0;
+        }
+        label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        .media-container {
+            text-align: center;
+            margin: 30px 0;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px dashed #bdc3c7;
+        }
+        .media-container img, .media-container iframe {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .media-caption {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        ul, ol {
+            background: #fdfefe;
+            padding: 20px 20px 20px 40px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .question-block {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border: 2px solid #f1f3f5;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .question-block:hover {
+            border-color: #dbe4eb;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .question-block p {
+            margin-top: 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .radio-label {
+            display: inline-block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        .cloze-input {
+            width: 150px !important;
+            display: inline-block;
+            border: none !important;
+            border-bottom: 2px dashed var(--primary-color) !important;
+            border-radius: 0 !important;
+            background: transparent;
+            text-align: center;
+            padding: 2px 5px !important;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .cloze-input:focus {
+            border-bottom: 2px solid var(--primary-color) !important;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        .print-btn {
+            background-color: #ecf0f1;
+            color: var(--text-color);
+        }
+        .print-btn:hover {
+            background-color: #bdc3c7;
+        }
+        .send-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        .send-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+        #status-message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 700;
+        }
+        @media print {
+            .button-group, #status-message { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .input-group, ul, ol, .question-block, .media-container { border: 1px solid #ccc; background: white; }
+            .media-container img, .media-container iframe { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Forscher-Arbeitsblatt</h1>
+    <div class="subtitle">Wird elektrischer Strom in einer Lampe verbraucht?</div>
+    
+    <div class="input-group">
+        <label for="student-name">Dein Name:</label>
+        <input type="text" id="student-name" placeholder="Vor- und Nachname eintragen">
+    </div>
+
+    <h2>Vorbereitung: Wie funktioniert ein Multimeter?</h2>
+    
+    <div class="media-container">
+        <iframe width="100%" height="400" src="https://www.youtube.com/embed/_ojBTpmCVJ0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <span class="media-caption">Erklärvideo: So benutzt du ein Multimeter.</span>
+    </div>
+
+    <h3>Fragen zum Video</h3>
+    
+    <div class="question-block">
+        <p>1. Welche Größen können laut Video mit einem Multimeter gemessen werden?</p>
+        <input type="radio" name="vq1" id="vq1a"> <label class="radio-label" for="vq1a">A) Leistung, Frequenz und Temperatur</label><br>
+        <input type="radio" name="vq1" id="vq1b"> <label class="radio-label" for="vq1b">B) Widerstand, Spannung und Stromstärke</label><br>
+        <input type="radio" name="vq1" id="vq1c"> <label class="radio-label" for="vq1c">C) Gewicht, Spannung und Widerstand</label><br>
+        <input type="radio" name="vq1" id="vq1d"> <label class="radio-label" for="vq1d">D) Stromstärke, Licht und Wärme</label>
+    </div>
+
+    <div class="question-block">
+        <p>2. Wo muss das schwarze Messkabel bei allen Messungen eingesteckt werden?</p>
+        <input type="radio" name="vq2" id="vq2a"> <label class="radio-label" for="vq2a">A) In die rote Buchse</label><br>
+        <input type="radio" name="vq2" id="vq2b"> <label class="radio-label" for="vq2b">B) In die Buchse mit „A“</label><br>
+        <input type="radio" name="vq2" id="vq2c"> <label class="radio-label" for="vq2c">C) In die schwarze COM-Buchse</label><br>
+        <input type="radio" name="vq2" id="vq2d"> <label class="radio-label" for="vq2d">D) Es ist egal</label>
+    </div>
+
+    <div class="question-block">
+        <p>3. Wofür steht das Zeichen „Ω“ (Omega) am Multimeter?</p>
+        <input type="radio" name="vq3" id="vq3a"> <label class="radio-label" for="vq3a">A) Für Spannung</label><br>
+        <input type="radio" name="vq3" id="vq3b"> <label class="radio-label" for="vq3b">B) Für Stromstärke</label><br>
+        <input type="radio" name="vq3" id="vq3c"> <label class="radio-label" for="vq3c">C) Für Frequenz</label><br>
+        <input type="radio" name="vq3" id="vq3d"> <label class="radio-label" for="vq3d">D) Für Widerstand</label>
+    </div>
+
+    <div class="question-block">
+        <p>4. Was passiert bei der Spannungsmessung, wenn die Messspitzen vertauscht werden?</p>
+        <input type="radio" name="vq4" id="vq4a"> <label class="radio-label" for="vq4a">A) Das Multimeter geht kaputt</label><br>
+        <input type="radio" name="vq4" id="vq4b"> <label class="radio-label" for="vq4b">B) Die Spannung wird größer</label><br>
+        <input type="radio" name="vq4" id="vq4c"> <label class="radio-label" for="vq4c">C) Es wird ein Minuszeichen angezeigt</label><br>
+        <input type="radio" name="vq4" id="vq4d"> <label class="radio-label" for="vq4d">D) Es wird nichts angezeigt</label>
+    </div>
+
+    <div class="question-block">
+        <p>5. In welche Buchse muss das rote Kabel bei der Strommessung gesteckt werden?</p>
+        <input type="radio" name="vq5" id="vq5a"> <label class="radio-label" for="vq5a">A) In die COM-Buchse</label><br>
+        <input type="radio" name="vq5" id="vq5b"> <label class="radio-label" for="vq5b">B) In die Buchse mit „A“</label><br>
+        <input type="radio" name="vq5" id="vq5c"> <label class="radio-label" for="vq5c">C) In die Ω-Buchse</label><br>
+        <input type="radio" name="vq5" id="vq5d"> <label class="radio-label" for="vq5d">D) In keine Buchse</label>
+    </div>
+
+    <h2>Materialliste für den Versuch</h2>
+    <ul>
+        <li>1x Steckplatte</li>
+        <li>1x Batterie (1,2 V)</li>
+        <li>1x Lampenfassung (E10)</li>
+        <li>1x Glühlampe (2,5 V / 0,2 A)</li>
+        <li>1x Schalter (EIN/AUS)</li>
+        <li>1x Strommessgerät (Amperemeter/Multimeter)</li>
+        <li>Verbindungsleitungen (rot und blau)</li>
+        <li>Leitungsstücke (gerade und winkelig)</li>
+        <li>Brückenstecker</li>
+    </ul>
+
+    <h2>Aufbau und Arbeitsanweisung</h2>
+    
+    <div class="media-container">
+        <img src="https://drive.google.com/uc?export=view&id=15jvrhuD5pE3wT4W0jGpQe44ZsChyi-sa" alt="Schaltplan Aufbau">
+        <span class="media-caption">So soll dein Stromkreis auf der Steckplatte aussehen.</span>
+    </div>
+
+    <ol>
+        <li>Baue den Grundstromkreis genau wie auf dem Schaltplan auf. Lass den Schalter zuerst noch auf AUS.</li>
+        <li><strong>Messung 1:</strong> Schließe das Amperemeter <strong>vor</strong> der Lampe an. Schalte kurz ein, notiere den Wert unten in der Tabelle und schalte wieder aus.</li>
+        <li><strong>Messung 2:</strong> Baue das Amperemeter um und schließe es <strong>nach</strong> der Lampe an. Wiederhole den Messvorgang.</li>
+    </ol>
+
+    <h2>Deine Messergebnisse</h2>
+    <table>
+        <tr>
+            <th>Messpunkt im Stromkreis</th>
+            <th>Gemessene Stromstärke (A)</th>
+        </tr>
+        <tr>
+            <td>Vor der Glühlampe</td>
+            <td>I = <input type="number" step="0.01" style="width: 100px;"> A</td>
+        </tr>
+        <tr>
+            <td>Nach der Glühlampe</td>
+            <td>I = <input type="number" step="0.01" style="width: 100px;"> A</td>
+        </tr>
+    </table>
+
+    <h2>Was hast du herausgefunden?</h2>
+    
+    <div class="question-block">
+        <p>1. Was stellst du bei deinen beiden Messungen fest?</p>
+        <input type="radio" name="q1" id="q1a"> <label class="radio-label" for="q1a">Der Strom ist nach der Lampe schwächer.</label><br>
+        <input type="radio" name="q1" id="q1b"> <label class="radio-label" for="q1b">Die Stromstärke ist an beiden Stellen genau gleich groß.</label><br>
+        <input type="radio" name="q1" id="q1c"> <label class="radio-label" for="q1c">Der Strom wird nach der Lampe stärker.</label>
+    </div>
+
+    <div class="question-block">
+        <p>2. Warum leuchtet die Lampe, wenn kein Strom weniger wird?</p>
+        <input type="radio" name="q2" id="q2a"> <label class="radio-label" for="q2a">Weil elektrische Energie in Licht und Wärme umgewandelt wird.</label><br>
+        <input type="radio" name="q2" id="q2b"> <label class="radio-label" for="q2b">Weil die Batterie sich entleert.</label>
+    </div>
+
+    <div class="question-block">
+        <p>3. Wie muss das Messgerät eingebaut werden, um richtig zu messen?</p>
+        <input type="radio" name="q3" id="q3a"> <label class="radio-label" for="q3a">In Reihe mit der Lampe (in einer Linie).</label><br>
+        <input type="radio" name="q3" id="q3b"> <label class="radio-label" for="q3b">Direkt an beide Pole der Batterie.</label>
+    </div>
+
+    <h2>Lückentext: Unsere Erkenntnis</h2>
+    <p style="line-height: 2.4;">
+        In einem einfachen Stromkreis ohne Abzweigungen ist die elektrische Stromstärke an allen Stellen 
+        <input type="text" class="cloze-input">. Es wird kein elektrischer Strom verbraucht, sondern elektrische 
+        <input type="text" class="cloze-input"> umgewandelt. Das 
+        <input type="text" class="cloze-input"> muss immer in 
+        <input type="text" class="cloze-input"> mit dem Verbraucher (der Lampe) eingebaut werden.
+    </p>
+
+    <div class="button-group">
+        <button class="print-btn" onclick="window.print()">Arbeitsblatt Drucken / als PDF speichern</button>
+        <button class="send-btn" onclick="sendeDaten()">Ergebnisse an Lehrkraft senden</button>
+    </div>
+    
+    <p id="status-message" style="display: none;"></p>
+
+</div>
+
+<script>
+    function sendeDaten() {
+        const webAppUrl = "https://script.google.com/macros/s/AKfycbytV25P4FxveBSauR0sF7r3Xaf5mDORJPNZaRH3Z5bVGElzvGxzFrG6BRpIDMyIZ_2-KQ/exec"; 
+
+        // Die Funktion liest aus, welcher Radio-Button angewählt wurde
+        function getRadioValue(idA, idB, idC, idD, valA, valB, valC, valD) {
+            if (document.getElementById(idA) && document.getElementById(idA).checked) return valA;
+            if (document.getElementById(idB) && document.getElementById(idB).checked) return valB;
+            if (document.getElementById(idC) && document.getElementById(idC).checked) return valC;
+            if (idD && document.getElementById(idD) && document.getElementById(idD).checked) return valD;
+            return "";
+        }
+
+        const data = {
+            Name_der_Schueler: document.getElementById('student-name').value,
+            
+            // Video Fragen
+            Video_Frage_1: getRadioValue('vq1a', 'vq1b', 'vq1c', 'vq1d', 'A', 'B', 'C', 'D'),
+            Video_Frage_2: getRadioValue('vq2a', 'vq2b', 'vq2c', 'vq2d', 'A', 'B', 'C', 'D'),
+            Video_Frage_3: getRadioValue('vq3a', 'vq3b', 'vq3c', 'vq3d', 'A', 'B', 'C', 'D'),
+            Video_Frage_4: getRadioValue('vq4a', 'vq4b', 'vq4c', 'vq4d', 'A', 'B', 'C', 'D'),
+            Video_Frage_5: getRadioValue('vq5a', 'vq5b', 'vq5c', 'vq5d', 'A', 'B', 'C', 'D'),
+
+            // Messwerte
+            Messwert_Vor_Lampe_A: document.querySelectorAll('input[type="number"]')[0].value,
+            Messwert_Nach_Lampe_A: document.querySelectorAll('input[type="number"]')[1].value,
+            
+            // Versuchsfragen
+            Antwort_Frage_1: getRadioValue('q1a', 'q1b', 'q1c', null, 'Schwächer', 'Gleich groß', 'Stärker', null),
+            Antwort_Frage_2: getRadioValue('q2a', 'q2b', null, null, 'Energie umgewandelt', 'Batterie leer', null, null),
+            Antwort_Frage_3: getRadioValue('q3a', 'q3b', null, null, 'In Reihe', 'An Pole', null, null),
+            
+            // Lückentext
+            Lueckentext_1: document.querySelectorAll('.cloze-input')[0].value,
+            Lueckentext_2: document.querySelectorAll('.cloze-input')[1].value,
+            Lueckentext_3: document.querySelectorAll('.cloze-input')[2].value,
+            Lueckentext_4: document.querySelectorAll('.cloze-input')[3].value
+        };
+
+        const statusMessage = document.getElementById('status-message');
+        statusMessage.style.display = "none";
+        statusMessage.style.backgroundColor = "#e8f8f5";
+        statusMessage.style.color = "#2980b9";
+        statusMessage.innerText = "Sende Daten...";
+        statusMessage.style.display = "block";
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(() => {
+            statusMessage.style.backgroundColor = "#e8f8f5";
+            statusMessage.style.color = "#27ae60";
+            statusMessage.innerText = "Daten erfolgreich gesendet!";
+            alert("Deine Ergebnisse wurden erfolgreich an die Lehrkraft gesendet!");
+        }).catch(error => {
+            statusMessage.style.backgroundColor = "#fdedec";
+            statusMessage.style.color = "#c0392b";
+            statusMessage.innerText = "Fehler beim Senden.";
+            alert("Fehler beim Senden: " + error);
+        });
+    }
+</script>
+
+</body>
+</html>

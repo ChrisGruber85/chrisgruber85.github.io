@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masseneinheiten – Affe klettert zum Baum</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:  #1D9E75;
+    --green2: #0F6E56;
+    --red:    #E24B4A;
+    --amber:  #BA7517;
+    --bg:     #f0ede6;
+    --card:   #ffffff;
+    --border: #dedad2;
+    --text:   #1a1a1a;
+    --muted:  #888780;
+    --bark:   #A0631A;
+    --leaf1:  #5DCAA5;
+    --leaf2:  #1D9E75;
+  }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  #difficulty-badge {
+    display: inline-block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 99px;
+    margin-bottom: 18px;
+    transition: background 0.4s, color 0.4s;
+  }
+  .diff-easy   { background: #e1f5ee; color: #0F6E56; }
+  .diff-medium { background: #faeeda; color: #633806; }
+  .diff-hard   { background: #fcebeb; color: #791F1F; }
+
+  #game {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    max-width: 720px;
+    align-items: flex-start;
+  }
+
+  #left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  #right { width: 220px; flex-shrink: 0; }
+
+  #question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px 18px;
+    text-align: center;
+  }
+
+  #question-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  #question {
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.3;
+    min-height: 40px;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .answer-part {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .answer-part input {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    width: 110px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 4px;
+    background: #fafaf8;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .answer-part input:focus { border-color: var(--green); }
+  .answer-part input.wide  { width: 140px; }
+
+  .unit-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  #submit-btn {
+    margin-top: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 32px;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.18s, transform 0.1s;
+  }
+  #submit-btn:hover  { background: var(--green2); }
+  #submit-btn:active { transform: scale(0.97); }
+
+  #feedback {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    min-height: 24px;
+    margin-top: 10px;
+  }
+  .fb-ok  { color: var(--green); }
+  .fb-err { color: var(--red); }
+
+  .stats-row { display: flex; gap: 10px; }
+  .stat-card {
+    flex: 1;
+    background: #eae8e2;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-val {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  #banana-bar {
+    background: #eae8e2;
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  #bananas-row { display: flex; align-items: center; gap: 4px; }
+  .banana-icon {
+    font-size: 20px;
+    filter: grayscale(1) opacity(0.3);
+    transition: filter 0.4s;
+  }
+  .banana-icon.earned { filter: none; }
+  #progress-bar-wrap {
+    flex: 1;
+    background: #c8c5bc;
+    border-radius: 99px;
+    height: 7px;
+    overflow: hidden;
+    margin-left: 6px;
+  }
+  #progress-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.5s;
+  }
+
+  #hint-box {
+    background: #fffbf0;
+    border: 1px solid #f0d890;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #633806;
+    line-height: 1.6;
+  }
+  #hint-box strong { font-weight: 700; }
+
+  #end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+  }
+  #end-screen .big-emoji { font-size: 64px; }
+  #end-screen h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  #end-screen p { color: var(--muted); font-size: 15px; }
+  #restart-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 30px;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+  }
+  #restart-btn:hover { background: var(--green2); }
+</style>
+</head>
+<body>
+
+<h1>⚖️ Masseneinheiten-Spiel</h1>
+<p class="subtitle">Hilf dem Affen, alle 5 Bananen zu holen!</p>
+<div id="difficulty-badge" class="diff-easy">Runde 1 – Leicht</div>
+
+<div id="game">
+  <div id="left">
+
+    <div id="question-card">
+      <div id="question-label">Wandle um</div>
+      <div id="question">Lädt…</div>
+      <div class="input-row" id="input-row"></div>
+      <button id="submit-btn" onclick="checkAnswer()">Prüfen ✓</button>
+      <div id="feedback"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Richtig</div>
+        <div class="stat-val" id="score-ok" style="color:var(--green)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Falsch</div>
+        <div class="stat-val" id="score-err" style="color:var(--red)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runde</div>
+        <div class="stat-val" id="round-display">1 / 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Stufe</div>
+        <div class="stat-val" id="level-display">🌱</div>
+      </div>
+    </div>
+
+    <div id="banana-bar">
+      <div class="bar-label">Gesammelte Bananen</div>
+      <div id="bananas-row">
+        <span class="banana-icon" id="b0">🍌</span>
+        <span class="banana-icon" id="b1">🍌</span>
+        <span class="banana-icon" id="b2">🍌</span>
+        <span class="banana-icon" id="b3">🍌</span>
+        <span class="banana-icon" id="b4">🍌</span>
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="hint-box">
+      <strong>💡 Merkhilfe:</strong><br>
+      1 t = 1000 kg &nbsp;|&nbsp; 1 kg = 100 dag &nbsp;|&nbsp; 1 dag = 10 g<br>
+      10 dag = 0,1 kg &nbsp;|&nbsp; 10 g = 1 dag &nbsp;|&nbsp; 100 dag = 1 kg
+    </div>
+
+  </div>
+
+  <div id="right">
+    <svg id="tree-svg" width="220" height="570"
+         viewBox="0 0 220 570"
+         xmlns="http://www.w3.org/2000/svg"
+         aria-label="Baum mit Affe und Banane"></svg>
+  </div>
+</div>
+
+<div id="end-screen">
+  <div class="big-emoji">🍌🐒🍌</div>
+  <h2>Der Affe ist satt!</h2>
+  <p id="end-stats">Lade…</p>
+  <button id="restart-btn" onclick="initGame()">Nochmal spielen</button>
+</div>
+
+<script>
+function q(text, answers, units) {
+  return { text, answers, units };
+}
+
+/* ── LEICHTE AUFGABEN ── */
+const EASY = [
+  q('1 t = ___ kg',     [1000],  ['kg']),
+  q('2 t = ___ kg',     [2000],  ['kg']),
+  q('3 t = ___ kg',     [3000],  ['kg']),
+  q('4 t = ___ kg',     [4000],  ['kg']),
+  q('5 t = ___ kg',     [5000],  ['kg']),
+  q('1 kg = ___ dag',   [100],   ['dag']),
+  q('2 kg = ___ dag',   [200],   ['dag']),
+  q('3 kg = ___ dag',   [300],   ['dag']),
+  q('4 kg = ___ dag',   [400],   ['dag']),
+  q('5 kg = ___ dag',   [500],   ['dag']),
+  q('1 dag = ___ g',    [10],    ['g']),
+  q('2 dag = ___ g',    [20],    ['g']),
+  q('3 dag = ___ g',    [30],    ['g']),
+  q('4 dag = ___ g',    [40],    ['g']),
+  q('5 dag = ___ g',    [50],    ['g']),
+  q('6 t = ___ kg',     [6000],  ['kg']),
+  q('7 t = ___ kg',     [7000],  ['kg']),
+  q('8 t = ___ kg',     [8000],  ['kg']),
+  q('9 t = ___ kg',     [9000],  ['kg']),
+  q('10 t = ___ kg',    [10000], ['kg']),
+  q('6 kg = ___ dag',   [600],   ['dag']),
+  q('7 kg = ___ dag',   [700],   ['dag']),
+  q('8 kg = ___ dag',   [800],   ['dag']),
+  q('9 kg = ___ dag',   [900],   ['dag']),
+  q('10 kg = ___ dag',  [1000],  ['dag']),
+  q('6 dag = ___ g',    [60],    ['g']),
+  q('7 dag = ___ g',    [70],    ['g']),
+  q('8 dag = ___ g',    [80],    ['g']),
+  q('9 dag = ___ g',    [90],    ['g']),
+  q('10 dag = ___ g',   [100],   ['g']),
+  q('1000 kg = ___ t',  [1],     ['t']),
+  q('2000 kg = ___ t',  [2],     ['t']),
+  q('3000 kg = ___ t',  [3],     ['t']),
+  q('4000 kg = ___ t',  [4],     ['t']),
+  q('5000 kg = ___ t',  [5],     ['t']),
+  q('10 dag = ___ kg',  [0.1],   ['kg']),
+  q('20 dag = ___ kg',  [0.2],   ['kg']),
+  q('30 dag = ___ kg',  [0.3],   ['kg']),
+  q('40 dag = ___ kg',  [0.4],   ['kg']),
+  q('50 dag = ___ kg',  [0.5],   ['kg']),
+  q('10 g = ___ dag',   [1],     ['dag']),
+  q('20 g = ___ dag',   [2],     ['dag']),
+  q('30 g = ___ dag',   [3],     ['dag']),
+  q('40 g = ___ dag',   [4],     ['dag']),
+  q('50 g = ___ dag',   [5],     ['dag']),
+  q('100 dag = ___ kg', [1],     ['kg']),
+  q('200 dag = ___ kg', [2],     ['kg']),
+  q('300 dag = ___ kg', [3],     ['kg']),
+  q('400 dag = ___ kg', [4],     ['kg']),
+  q('500 dag = ___ kg', [5],     ['kg']),
+];
+
+/* ── MITTLERE AUFGABEN ── */
+const MEDIUM = [
+  q('1500 kg = ___ t',           [1.5],   ['t']),
+  q('2500 kg = ___ t',           [2.5],   ['t']),
+  q('3500 kg = ___ t',           [3.5],   ['t']),
+  q('4500 kg = ___ t',           [4.5],   ['t']),
+  q('5500 kg = ___ t',           [5.5],   ['t']),
+  q('15 kg = ___ dag',           [1500],  ['dag']),
+  q('25 kg = ___ dag',           [2500],  ['dag']),
+  q('35 kg = ___ dag',           [3500],  ['dag']),
+  q('45 kg = ___ dag',           [4500],  ['dag']),
+  q('55 kg = ___ dag',           [5500],  ['dag']),
+  q('12 dag = ___ g',            [120],   ['g']),
+  q('23 dag = ___ g',            [230],   ['g']),
+  q('34 dag = ___ g',            [340],   ['g']),
+  q('45 dag = ___ g',            [450],   ['g']),
+  q('56 dag = ___ g',            [560],   ['g']),
+  q('11 dag = ___ g',            [110],   ['g']),
+  q('22 dag = ___ g',            [220],   ['g']),
+  q('33 dag = ___ g',            [330],   ['g']),
+  q('44 dag = ___ g',            [440],   ['g']),
+  q('55 dag = ___ g',            [550],   ['g']),
+  q('200 g = ___ dag',           [20],    ['dag']),
+  q('350 g = ___ dag ___ g',     [35, 0], ['dag','g']),
+  q('480 g = ___ dag ___ g',     [48, 0], ['dag','g']),
+  q('910 g = ___ dag ___ g',     [91, 0], ['dag','g']),
+  q('125 g = ___ dag ___ g',     [12, 5], ['dag','g']),
+  q('250 dag = ___ kg',          [2.5],   ['kg']),
+  q('370 dag = ___ kg ___ dag',  [3, 70], ['kg','dag']),
+  q('480 dag = ___ kg ___ dag',  [4, 80], ['kg','dag']),
+  q('990 dag = ___ kg ___ dag',  [9, 90], ['kg','dag']),
+  q('123 dag = ___ kg ___ dag',  [1, 23], ['kg','dag']),
+  q('1200 kg = ___ t ___ kg',    [1, 200],['t','kg']),
+  q('2300 kg = ___ t ___ kg',    [2, 300],['t','kg']),
+  q('3400 kg = ___ t ___ kg',    [3, 400],['t','kg']),
+  q('4500 kg = ___ t ___ kg',    [4, 500],['t','kg']),
+  q('5670 kg = ___ t ___ kg',    [5, 670],['t','kg']),
+  q('140 g = ___ dag ___ g',     [14, 0], ['dag','g']),
+  q('275 g = ___ dag ___ g',     [27, 5], ['dag','g']),
+  q('389 g = ___ dag ___ g',     [38, 9], ['dag','g']),
+  q('640 g = ___ dag ___ g',     [64, 0], ['dag','g']),
+  q('999 g = ___ dag ___ g',     [99, 9], ['dag','g']),
+  q('100 g = ___ dag',           [10],    ['dag']),
+  q('200 g = ___ dag',           [20],    ['dag']),
+  q('350 g = ___ dag',           [35],    ['dag']),
+  q('470 g = ___ dag',           [47],    ['dag']),
+  q('580 g = ___ dag',           [58],    ['dag']),
+  q('2 t = ___ kg',              [2000],  ['kg']),
+  q('3 kg = ___ dag',            [300],   ['dag']),
+  q('4 dag = ___ g',             [40],    ['g']),
+  q('5 kg = ___ g',              [5000],  ['g']),
+  q('6 t = ___ kg',              [6000],  ['kg']),
+];
+
+/* ── SCHWERE AUFGABEN ── */
+const HARD = [
+  q('1,5 t = ___ kg',        [1500],   ['kg']),
+  q('2,75 t = ___ kg',       [2750],   ['kg']),
+  q('0,5 t = ___ kg',        [500],    ['kg']),
+  q('3,2 t = ___ kg',        [3200],   ['kg']),
+  q('4,05 t = ___ kg',       [4050],   ['kg']),
+  q('1,2 kg = ___ g',        [1200],   ['g']),
+  q('2,35 kg = ___ g',       [2350],   ['g']),
+  q('0,75 kg = ___ g',       [750],    ['g']),
+  q('3,5 kg = ___ g',        [3500],   ['g']),
+  q('4,08 kg = ___ g',       [4080],   ['g']),
+  q('2,5 dag = ___ g',       [25],     ['g']),
+  q('3,75 dag = ___ g',      [37.5],   ['g']),
+  q('0,8 dag = ___ g',       [8],      ['g']),
+  q('6,4 dag = ___ g',       [64],     ['g']),
+  q('9,05 dag = ___ g',      [90.5],   ['g']),
+  q('1,5 g = ___ dag',       [0.15],   ['dag']),
+  q('2,75 g = ___ dag',      [0.275],  ['dag']),
+  q('0,6 g = ___ dag',       [0.06],   ['dag']),
+  q('4,2 g = ___ dag',       [0.42],   ['dag']),
+  q('8,05 g = ___ dag',      [0.805],  ['dag']),
+  q('1750 kg = ___ t',       [1.75],   ['t']),
+  q('2850 kg = ___ t',       [2.85],   ['t']),
+  q('3999 kg = ___ t',       [3.999],  ['t']),
+  q('4125 kg = ___ t',       [4.125],  ['t']),
+  q('999 kg = ___ t',        [0.999],  ['t']),
+  q('345 g = ___ dag',       [34.5],   ['dag']),
+  q('678 g = ___ dag',       [67.8],   ['dag']),
+  q('905 g = ___ dag',       [90.5],   ['dag']),
+  q('1234 g = ___ dag',      [123.4],  ['dag']),
+  q('250 g = ___ dag',       [25],     ['dag']),
+  q('789 dag = ___ kg',      [7.89],   ['kg']),
+  q('1560 dag = ___ kg',     [15.6],   ['kg']),
+  q('2345 dag = ___ kg',     [23.45],  ['kg']),
+  q('999 dag = ___ kg',      [9.99],   ['kg']),
+  q('120 dag = ___ kg',      [1.2],    ['kg']),
+  q('3 t 250 kg = ___ kg',   [3250],   ['kg']),
+  q('5 t 75 kg = ___ kg',    [5075],   ['kg']),
+  q('2 t 600 kg = ___ kg',   [2600],   ['kg']),
+  q('7 t 8 kg = ___ kg',     [7008],   ['kg']),
+  q('1 t 999 kg = ___ kg',   [1999],   ['kg']),
+  q('4 kg 35 dag = ___ dag', [435],    ['dag']),
+  q('6 kg 8 dag = ___ dag',  [608],    ['dag']),
+  q('2 kg 99 dag = ___ dag', [299],    ['dag']),
+  q('9 kg 5 dag = ___ dag',  [905],    ['dag']),
+  q('1 kg 250 dag = ___ dag',[350],    ['dag']),
+  q('7 dag 5 g = ___ g',     [75],     ['g']),
+  q('8 dag 12 g = ___ g',    [92],     ['g']),
+  q('3 dag 45 g = ___ g',    [75],     ['g']),
+  q('9 dag 9 g = ___ g',     [99],     ['g']),
+  q('5 dag 100 g = ___ g',   [150],    ['g']),
+];
+
+const ROUND_POOLS = [EASY, EASY, MEDIUM, MEDIUM, HARD];
+const ROUND_NAMES = ['Leicht 🌱','Leicht 🌿','Mittel ⭐','Mittel ⭐⭐','Schwer 🔥'];
+const ROUND_DIFF  = ['diff-easy','diff-easy','diff-medium','diff-medium','diff-hard'];
+const LEVEL_ICONS = ['🌱','🌿','⭐','⭐⭐','🔥'];
+
+const STEPS = 10;
+
+const branchData = [];
+for (let i = 0; i < STEPS; i++) {
+  const dir = (i % 2 === 0) ? 1 : -1;
+  const len = 36 + (i % 4) * 8;
+  const baseY = 510 - i * 46;
+  branchData.push({ y: baseY, len, dir });
+}
+
+let pos, bananasEarned, round, correctTotal, wrongTotal, animating;
+let usedIndices = [];
+let currentQuestion = null;
+
+function pickQuestion(roundIndex) {
+  const pool = ROUND_POOLS[roundIndex];
+  let idx, tries = 0;
+  do {
+    idx = Math.floor(Math.random() * pool.length);
+    tries++;
+  } while (usedIndices.includes(idx + roundIndex * 1000) && tries < 60);
+  usedIndices.push(idx + roundIndex * 1000);
+  return pool[idx];
+}
+
+function drawTree() {
+  const svg = document.getElementById('tree-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const sky = document.createElementNS(ns, 'rect');
+  sky.setAttribute('x','0'); sky.setAttribute('y','0');
+  sky.setAttribute('width','220'); sky.setAttribute('height','570');
+  sky.setAttribute('rx','12'); sky.setAttribute('fill','#eaf6ff');
+  svg.appendChild(sky);
+
+  const trunk = document.createElementNS(ns, 'rect');
+  trunk.setAttribute('x','105'); trunk.setAttribute('y','72');
+  trunk.setAttribute('width','18'); trunk.setAttribute('height','460');
+  trunk.setAttribute('rx','8'); trunk.setAttribute('fill','#A0631A');
+  svg.appendChild(trunk);
+
+  branchData.forEach((b) => {
+    const br = document.createElementNS(ns, 'line');
+    br.setAttribute('x1','114'); br.setAttribute('y1', b.y);
+    br.setAttribute('x2', 114 + b.dir * b.len);
+    br.setAttribute('y2', b.y - 12);
+    br.setAttribute('stroke','#A0631A');
+    br.setAttribute('stroke-width','5');
+    br.setAttribute('stroke-linecap','round');
+    svg.appendChild(br);
+
+    const lx = 114 + b.dir * b.len;
+    const ly = b.y - 18;
+    for (let li = 0; li < 2; li++) {
+      const leaf = document.createElementNS(ns, 'ellipse');
+      leaf.setAttribute('cx', lx + b.dir * (10 + li * 8));
+      leaf.setAttribute('cy', ly - li * 7);
+      leaf.setAttribute('rx', li === 0 ? '16' : '10');
+      leaf.setAttribute('ry', li === 0 ? '7'  : '5');
+      leaf.setAttribute('fill', li === 0 ? '#5DCAA5' : '#1D9E75');
+      leaf.setAttribute('opacity','0.88');
+      svg.appendChild(leaf);
+    }
+  });
+
+  [[-34,6],[-22,-2],[-10,-7],[4,-9],[18,-7],[30,-2],[42,6]].forEach(([ox,oy]) => {
+    const e = document.createElementNS(ns, 'ellipse');
+    e.setAttribute('cx', 114 + ox); e.setAttribute('cy', 76 + oy);
+    e.setAttribute('rx','20'); e.setAttribute('ry','10');
+    e.setAttribute('fill','#5DCAA5'); e.setAttribute('opacity','0.92');
+    svg.appendChild(e);
+  });
+
+  const banan = document.createElementNS(ns, 'text');
+  banan.setAttribute('x','114'); banan.setAttribute('y','62');
+  banan.setAttribute('text-anchor','middle'); banan.setAttribute('font-size','22');
+  banan.textContent = '🍌';
+  svg.appendChild(banan);
+
+  const monkey = document.createElementNS(ns, 'text');
+  monkey.setAttribute('id','monkey');
+  monkey.setAttribute('x','114');
+  monkey.setAttribute('text-anchor','middle');
+  monkey.setAttribute('font-size','28');
+  monkey.textContent = '🐒';
+  svg.appendChild(monkey);
+
+  updateMonkeyPos();
+}
+
+function getMonkeyY(p) {
+  if (p >= STEPS) return 56;
+  return branchData[p].y + 5;
+}
+
+function updateMonkeyPos() {
+  const m = document.getElementById('monkey');
+  if (m) m.setAttribute('y', getMonkeyY(pos));
+}
+
+function buildInputRow(q) {
+  const row = document.getElementById('input-row');
+  row.innerHTML = '';
+  q.answers.forEach((_, i) => {
+    const part = document.createElement('div');
+    part.className = 'answer-part';
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.id = 'ans_' + i;
+    inp.step = 'any';
+    inp.className = q.answers.length === 1 ? 'wide' : '';
+    inp.setAttribute('autocomplete','off');
+    if (i === 0) setTimeout(() => inp.focus(), 50);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+    part.appendChild(inp);
+    if (q.units && q.units[i]) {
+      const ul = document.createElement('span');
+      ul.className = 'unit-label';
+      ul.textContent = q.units[i];
+      part.appendChild(ul);
+    }
+    row.appendChild(part);
+  });
+}
+
+function newQuestion() {
+  currentQuestion = pickQuestion(round - 1);
+  document.getElementById('question').textContent = currentQuestion.text;
+  buildInputRow(currentQuestion);
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+}
+
+function numEq(a, b) { return Math.abs(a - b) < 0.0001; }
+
+function checkAnswer() {
+  if (animating || !currentQuestion) return;
+  const q = currentQuestion;
+  let allOk = true;
+  for (let i = 0; i < q.answers.length; i++) {
+    const inp = document.getElementById('ans_' + i);
+    const val = parseFloat(inp.value.replace(',','.'));
+    if (isNaN(val) || !numEq(val, q.answers[i])) { allOk = false; break; }
+  }
+
+  const fb = document.getElementById('feedback');
+  animating = true;
+
+  if (allOk) {
+    correctTotal++;
+    document.getElementById('score-ok').textContent = correctTotal;
+    fb.textContent = '✓ Richtig! Der Affe klettert hoch!';
+    fb.className = 'fb-ok';
+    pos = Math.min(pos + 1, STEPS);
+    updateMonkeyPos();
+    if (pos >= STEPS) { setTimeout(celebrateBanana, 500); return; }
+  } else {
+    wrongTotal++;
+    document.getElementById('score-err').textContent = wrongTotal;
+    const correctStr = q.answers.map((a,i) => a + (q.units[i] ? ' ' + q.units[i] : '')).join(' | ');
+    fb.textContent = '✗ Falsch! Richtig: ' + correctStr + '. Affe fällt runter!';
+    fb.className = 'fb-err';
+    pos = Math.max(pos - 1, 0);
+    updateMonkeyPos();
+  }
+
+  setTimeout(() => { animating = false; newQuestion(); }, 1100);
+}
+
+function updateDifficultyBadge() {
+  const badge = document.getElementById('difficulty-badge');
+  badge.textContent = 'Runde ' + round + ' – ' + ROUND_NAMES[round - 1];
+  badge.className = ROUND_DIFF[round - 1];
+  document.getElementById('level-display').textContent = LEVEL_ICONS[round - 1];
+  document.getElementById('round-display').textContent = round + ' / 5';
+}
+
+function celebrateBanana() {
+  bananasEarned++;
+  const bEl = document.getElementById('b' + (bananasEarned - 1));
+  if (bEl) bEl.classList.add('earned');
+  document.getElementById('progress-bar').style.width = (bananasEarned * 20) + '%';
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = '🍌 Banane ' + bananasEarned + ' von 5 geholt!';
+  fb.className = 'fb-ok';
+
+  if (bananasEarned >= 5) { setTimeout(showEnd, 900); return; }
+
+  round++;
+  updateDifficultyBadge();
+  pos = 0;
+  updateMonkeyPos();
+  setTimeout(() => { animating = false; newQuestion(); }, 1400);
+}
+
+function showEnd() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'none';
+  const es = document.getElementById('end-screen');
+  es.style.display = 'flex';
+  es.querySelector('#end-stats').innerHTML =
+    'Du hast <strong>' + correctTotal + '</strong> Aufgaben richtig und <strong>' + wrongTotal + '</strong> falsch beantwortet.';
+}
+
+function initGame() {
+  pos = 0; bananasEarned = 0; round = 1;
+  correctTotal = 0; wrongTotal = 0; animating = false;
+  usedIndices = [];
+  document.getElementById('score-ok').textContent  = '0';
+  document.getElementById('score-err').textContent = '0';
+  document.getElementById('progress-bar').style.width = '0%';
+  for (let i = 0; i < 5; i++) {
+    const b = document.getElementById('b' + i);
+    if (b) b.classList.remove('earned');
+  }
+  document.getElementById('game').style.display = 'flex';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'inline-block';
+  updateDifficultyBadge();
+  drawTree();
+  newQuestion();
+}
+
+initGame();
+</script>
+</body>
+</html>

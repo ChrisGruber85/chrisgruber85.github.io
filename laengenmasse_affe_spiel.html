@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Längenmaße – Affe klettert zum Baum</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:  #1D9E75;
+    --green2: #0F6E56;
+    --red:    #E24B4A;
+    --amber:  #BA7517;
+    --bg:     #f0ede6;
+    --card:   #ffffff;
+    --border: #dedad2;
+    --text:   #1a1a1a;
+    --muted:  #888780;
+    --bark:   #A0631A;
+    --leaf1:  #5DCAA5;
+    --leaf2:  #1D9E75;
+    --sky:    #e8f4fd;
+  }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  #difficulty-badge {
+    display: inline-block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 99px;
+    margin-bottom: 18px;
+    transition: background 0.4s, color 0.4s;
+  }
+  .diff-easy   { background: #e1f5ee; color: #0F6E56; }
+  .diff-medium { background: #faeeda; color: #633806; }
+  .diff-hard   { background: #fcebeb; color: #791F1F; }
+
+  #game {
+    display: flex;
+    gap: 18px;
+    width: 100%;
+    max-width: 720px;
+    align-items: flex-start;
+  }
+
+  #left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  #right {
+    width: 220px;
+    flex-shrink: 0;
+  }
+
+  #question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px 18px;
+    text-align: center;
+  }
+
+  #question-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  #question {
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.3;
+    min-height: 40px;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .answer-part {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .answer-part input {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    width: 100px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 4px;
+    background: #fafaf8;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .answer-part input:focus { border-color: var(--green); }
+  .answer-part input.wide  { width: 130px; }
+
+  .unit-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  #submit-btn {
+    margin-top: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 32px;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    transition: background 0.18s, transform 0.1s;
+  }
+  #submit-btn:hover  { background: var(--green2); }
+  #submit-btn:active { transform: scale(0.97); }
+
+  #feedback {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    min-height: 24px;
+    margin-top: 10px;
+  }
+  .fb-ok  { color: var(--green); }
+  .fb-err { color: var(--red); }
+
+  .stats-row {
+    display: flex;
+    gap: 10px;
+  }
+  .stat-card {
+    flex: 1;
+    background: #eae8e2;
+    border-radius: 8px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .stat-val {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  #banana-bar {
+    background: #eae8e2;
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+  .bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  #bananas-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .banana-icon {
+    font-size: 20px;
+    filter: grayscale(1) opacity(0.3);
+    transition: filter 0.4s;
+  }
+  .banana-icon.earned { filter: none; }
+  #progress-bar-wrap {
+    flex: 1;
+    background: #c8c5bc;
+    border-radius: 99px;
+    height: 7px;
+    overflow: hidden;
+    margin-left: 6px;
+  }
+  #progress-bar {
+    height: 100%;
+    background: var(--green);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.5s;
+  }
+
+  #hint-box {
+    background: #fffbf0;
+    border: 1px solid #f0d890;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #633806;
+    line-height: 1.5;
+  }
+  #hint-box strong { font-weight: 700; }
+
+  #end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+  }
+  #end-screen .big-emoji { font-size: 64px; }
+  #end-screen h2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text);
+  }
+  #end-screen p { color: var(--muted); font-size: 15px; }
+  #restart-btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 30px;
+    cursor: pointer;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+  }
+  #restart-btn:hover { background: var(--green2); }
+</style>
+</head>
+<body>
+
+<h1>🐒 Längenmaße-Spiel</h1>
+<p class="subtitle">Hilf dem Affen, alle 5 Bananen zu holen!</p>
+<div id="difficulty-badge" class="diff-easy">Runde 1 – Leicht</div>
+
+<div id="game">
+  <div id="left">
+
+    <div id="question-card">
+      <div id="question-label">Wandle um</div>
+      <div id="question">Lädt…</div>
+      <div class="input-row" id="input-row"></div>
+      <button id="submit-btn" onclick="checkAnswer()">Prüfen ✓</button>
+      <div id="feedback"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Richtig</div>
+        <div class="stat-val" id="score-ok"  style="color:var(--green)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Falsch</div>
+        <div class="stat-val" id="score-err" style="color:var(--red)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runde</div>
+        <div class="stat-val" id="round-display">1 / 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Stufe</div>
+        <div class="stat-val" id="level-display">🌱</div>
+      </div>
+    </div>
+
+    <div id="banana-bar">
+      <div class="bar-label">Gesammelte Bananen</div>
+      <div id="bananas-row">
+        <span class="banana-icon" id="b0">🍌</span>
+        <span class="banana-icon" id="b1">🍌</span>
+        <span class="banana-icon" id="b2">🍌</span>
+        <span class="banana-icon" id="b3">🍌</span>
+        <span class="banana-icon" id="b4">🍌</span>
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="hint-box">
+      <strong>💡 Merkhilfe:</strong> 1 km = 1000 m &nbsp;|&nbsp; 1 m = 10 dm &nbsp;|&nbsp; 1 dm = 10 cm &nbsp;|&nbsp; 1 cm = 10 mm
+    </div>
+
+  </div>
+
+  <div id="right">
+    <svg id="tree-svg" width="220" height="570"
+         viewBox="0 0 220 570"
+         xmlns="http://www.w3.org/2000/svg"
+         aria-label="Baum mit Affe und Banane"></svg>
+  </div>
+</div>
+
+<div id="end-screen">
+  <div class="big-emoji">🍌🐒🍌</div>
+  <h2>Der Affe ist satt!</h2>
+  <p id="end-stats">Lade…</p>
+  <button id="restart-btn" onclick="initGame()">Nochmal spielen</button>
+</div>
+
+<script>
+/* ========================================================
+   AUFGABEN – 150 Stück, aufgeteilt in 3 Schwierigkeitsstufen
+   Format: { text, answers: [zahl, ...], units: ['km', ...] }
+   Für Aufgaben ohne Einheit im Ergebnis: units leer lassen
+======================================================== */
+
+function q(text, answers, units) {
+  return { text, answers, units };
+}
+
+const EASY = [
+  q('1 km = ___ m',    [1000],  ['m']),
+  q('2 km = ___ m',    [2000],  ['m']),
+  q('3 km = ___ m',    [3000],  ['m']),
+  q('4 km = ___ m',    [4000],  ['m']),
+  q('5 km = ___ m',    [5000],  ['m']),
+  q('1 m = ___ dm',    [10],    ['dm']),
+  q('2 m = ___ dm',    [20],    ['dm']),
+  q('3 m = ___ dm',    [30],    ['dm']),
+  q('4 m = ___ dm',    [40],    ['dm']),
+  q('5 m = ___ dm',    [50],    ['dm']),
+  q('1 dm = ___ cm',   [10],    ['cm']),
+  q('2 dm = ___ cm',   [20],    ['cm']),
+  q('3 dm = ___ cm',   [30],    ['cm']),
+  q('4 dm = ___ cm',   [40],    ['cm']),
+  q('5 dm = ___ cm',   [50],    ['cm']),
+  q('1 cm = ___ mm',   [10],    ['mm']),
+  q('2 cm = ___ mm',   [20],    ['mm']),
+  q('3 cm = ___ mm',   [30],    ['mm']),
+  q('4 cm = ___ mm',   [40],    ['mm']),
+  q('5 cm = ___ mm',   [50],    ['mm']),
+  q('6 km = ___ m',    [6000],  ['m']),
+  q('7 km = ___ m',    [7000],  ['m']),
+  q('8 km = ___ m',    [8000],  ['m']),
+  q('9 km = ___ m',    [9000],  ['m']),
+  q('10 km = ___ m',   [10000], ['m']),
+  q('6 m = ___ dm',    [60],    ['dm']),
+  q('7 m = ___ dm',    [70],    ['dm']),
+  q('8 m = ___ dm',    [80],    ['dm']),
+  q('9 m = ___ dm',    [90],    ['dm']),
+  q('10 m = ___ dm',   [100],   ['dm']),
+  q('6 dm = ___ cm',   [60],    ['cm']),
+  q('7 dm = ___ cm',   [70],    ['cm']),
+  q('8 dm = ___ cm',   [80],    ['cm']),
+  q('9 dm = ___ cm',   [90],    ['cm']),
+  q('10 dm = ___ cm',  [100],   ['cm']),
+  q('6 cm = ___ mm',   [60],    ['mm']),
+  q('7 cm = ___ mm',   [70],    ['mm']),
+  q('8 cm = ___ mm',   [80],    ['mm']),
+  q('9 cm = ___ mm',   [90],    ['mm']),
+  q('10 cm = ___ mm',  [100],   ['mm']),
+  q('1000 m = ___ km', [1],     ['km']),
+  q('2000 m = ___ km', [2],     ['km']),
+  q('3000 m = ___ km', [3],     ['km']),
+  q('4000 m = ___ km', [4],     ['km']),
+  q('5000 m = ___ km', [5],     ['km']),
+  q('10 dm = ___ m',   [1],     ['m']),
+  q('20 dm = ___ m',   [2],     ['m']),
+  q('30 dm = ___ m',   [3],     ['m']),
+  q('40 dm = ___ m',   [4],     ['m']),
+  q('50 dm = ___ m',   [5],     ['m']),
+];
+
+const MEDIUM = [
+  q('1500 m = ___ km ___ m',  [1, 500],  ['km', 'm']),
+  q('2500 m = ___ km ___ m',  [2, 500],  ['km', 'm']),
+  q('3500 m = ___ km ___ m',  [3, 500],  ['km', 'm']),
+  q('4500 m = ___ km ___ m',  [4, 500],  ['km', 'm']),
+  q('5500 m = ___ km ___ m',  [5, 500],  ['km', 'm']),
+  q('15 m = ___ dm',          [150],     ['dm']),
+  q('25 m = ___ dm',          [250],     ['dm']),
+  q('35 m = ___ dm',          [350],     ['dm']),
+  q('45 m = ___ dm',          [450],     ['dm']),
+  q('55 m = ___ dm',          [550],     ['dm']),
+  q('12 dm = ___ cm',         [120],     ['cm']),
+  q('23 dm = ___ cm',         [230],     ['cm']),
+  q('34 dm = ___ cm',         [340],     ['cm']),
+  q('45 dm = ___ cm',         [450],     ['cm']),
+  q('56 dm = ___ cm',         [560],     ['cm']),
+  q('11 cm = ___ mm',         [110],     ['mm']),
+  q('22 cm = ___ mm',         [220],     ['mm']),
+  q('33 cm = ___ mm',         [330],     ['mm']),
+  q('44 cm = ___ mm',         [440],     ['mm']),
+  q('55 cm = ___ mm',         [550],     ['mm']),
+  q('200 cm = ___ m',         [2],       ['m']),
+  q('350 cm = ___ m ___ cm',  [3, 50],   ['m', 'cm']),
+  q('480 cm = ___ m ___ cm',  [4, 80],   ['m', 'cm']),
+  q('910 cm = ___ m ___ cm',  [9, 10],   ['m', 'cm']),
+  q('125 cm = ___ m ___ cm',  [1, 25],   ['m', 'cm']),
+  q('250 mm = ___ cm',        [25],      ['cm']),
+  q('370 mm = ___ cm ___ mm', [37, 0],   ['cm', 'mm']),
+  q('480 mm = ___ cm ___ mm', [48, 0],   ['cm', 'mm']),
+  q('990 mm = ___ cm ___ mm', [99, 0],   ['cm', 'mm']),
+  q('123 mm = ___ cm ___ mm', [12, 3],   ['cm', 'mm']),
+  q('1200 m = ___ km ___ m',  [1, 200],  ['km', 'm']),
+  q('2300 m = ___ km ___ m',  [2, 300],  ['km', 'm']),
+  q('3400 m = ___ km ___ m',  [3, 400],  ['km', 'm']),
+  q('4500 m = ___ km ___ m',  [4, 500],  ['km', 'm']),
+  q('5670 m = ___ km ___ m',  [5, 670],  ['km', 'm']),
+  q('140 cm = ___ m ___ cm',  [1, 40],   ['m', 'cm']),
+  q('275 cm = ___ m ___ cm',  [2, 75],   ['m', 'cm']),
+  q('389 cm = ___ m ___ cm',  [3, 89],   ['m', 'cm']),
+  q('640 cm = ___ m ___ cm',  [6, 40],   ['m', 'cm']),
+  q('999 cm = ___ m ___ cm',  [9, 99],   ['m', 'cm']),
+  q('100 mm = ___ cm',        [10],      ['cm']),
+  q('200 mm = ___ cm',        [20],      ['cm']),
+  q('350 mm = ___ cm ___ mm', [35, 0],   ['cm', 'mm']),
+  q('470 mm = ___ cm ___ mm', [47, 0],   ['cm', 'mm']),
+  q('580 mm = ___ cm ___ mm', [58, 0],   ['cm', 'mm']),
+  q('2 km = ___ m',           [2000],    ['m']),
+  q('3 m = ___ cm',           [300],     ['cm']),
+  q('4 dm = ___ mm',          [400],     ['mm']),
+  q('5 cm = ___ mm',          [50],      ['mm']),
+  q('6 km = ___ m',           [6000],    ['m']),
+];
+
+const HARD = [
+  q('1,5 km = ___ m',         [1500],    ['m']),
+  q('2,75 km = ___ m',        [2750],    ['m']),
+  q('0,5 km = ___ m',         [500],     ['m']),
+  q('3,2 km = ___ m',         [3200],    ['m']),
+  q('4,05 km = ___ m',        [4050],    ['m']),
+  q('1,2 m = ___ cm',         [120],     ['cm']),
+  q('2,35 m = ___ cm',        [235],     ['cm']),
+  q('0,75 m = ___ cm',        [75],      ['cm']),
+  q('3,5 m = ___ cm',         [350],     ['cm']),
+  q('4,08 m = ___ cm',        [408],     ['cm']),
+  q('2,5 dm = ___ cm',        [25],      ['cm']),
+  q('3,75 dm = ___ cm',       [37.5],    ['cm']),
+  q('0,8 dm = ___ cm',        [8],       ['cm']),
+  q('6,4 dm = ___ cm',        [64],      ['cm']),
+  q('9,05 dm = ___ cm',       [90.5],    ['cm']),
+  q('1,5 cm = ___ mm',        [15],      ['mm']),
+  q('2,75 cm = ___ mm',       [27.5],    ['mm']),
+  q('0,6 cm = ___ mm',        [6],       ['mm']),
+  q('4,2 cm = ___ mm',        [42],      ['mm']),
+  q('8,05 cm = ___ mm',       [80.5],    ['mm']),
+  q('1750 m = ___ km',        [1.75],    ['km']),
+  q('2850 m = ___ km',        [2.85],    ['km']),
+  q('3999 m = ___ km',        [3.999],   ['km']),
+  q('4125 m = ___ km',        [4.125],   ['km']),
+  q('999 m = ___ km',         [0.999],   ['km']),
+  q('345 cm = ___ m',         [3.45],    ['m']),
+  q('678 cm = ___ m',         [6.78],    ['m']),
+  q('905 cm = ___ m',         [9.05],    ['m']),
+  q('1234 cm = ___ m',        [12.34],   ['m']),
+  q('250 cm = ___ m',         [2.5],     ['m']),
+  q('789 mm = ___ cm',        [78.9],    ['cm']),
+  q('1560 mm = ___ cm',       [156],     ['cm']),
+  q('2345 mm = ___ cm',       [234.5],   ['cm']),
+  q('999 mm = ___ cm',        [99.9],    ['cm']),
+  q('120 mm = ___ cm',        [12],      ['cm']),
+  q('3 km 250 m = ___ m',     [3250],    ['m']),
+  q('5 km 75 m = ___ m',      [5075],    ['m']),
+  q('2 km 600 m = ___ m',     [2600],    ['m']),
+  q('7 km 8 m = ___ m',       [7008],    ['m']),
+  q('1 km 999 m = ___ m',     [1999],    ['m']),
+  q('4 m 35 cm = ___ cm',     [435],     ['cm']),
+  q('6 m 8 cm = ___ cm',      [608],     ['cm']),
+  q('2 m 99 cm = ___ cm',     [299],     ['cm']),
+  q('9 m 5 cm = ___ cm',      [905],     ['cm']),
+  q('1 m 250 cm = ___ cm',    [350],     ['cm']),
+  q('7 dm 5 cm = ___ cm',     [75],      ['cm']),
+  q('8 dm 12 cm = ___ cm',    [92],      ['cm']),
+  q('3 dm 45 cm = ___ cm',    [75],      ['cm']),
+  q('9 dm 9 cm = ___ cm',     [99],      ['cm']),
+  q('5 dm 100 cm = ___ cm',   [150],     ['cm']),
+];
+
+/* Round -> pool mapping: 5 rounds, increasing difficulty */
+const ROUND_POOLS = [EASY, EASY, MEDIUM, MEDIUM, HARD];
+const ROUND_NAMES = ['Leicht 🌱', 'Leicht 🌿', 'Mittel ⭐', 'Mittel ⭐⭐', 'Schwer 🔥'];
+const ROUND_DIFF  = ['diff-easy','diff-easy','diff-medium','diff-medium','diff-hard'];
+const LEVEL_ICONS = ['🌱','🌿','⭐','⭐⭐','🔥'];
+
+const STEPS = 10;
+
+const branchData = [];
+for (let i = 0; i < STEPS; i++) {
+  const dir = (i % 2 === 0) ? 1 : -1;
+  const len = 36 + (i % 4) * 8;
+  const baseY = 510 - i * 46;
+  branchData.push({ y: baseY, len, dir });
+}
+
+let pos, bananasEarned, round, correctTotal, wrongTotal, animating;
+let usedIndices = [];
+let currentQuestion = null;
+
+function pickQuestion(roundIndex) {
+  const pool = ROUND_POOLS[roundIndex];
+  let idx;
+  let tries = 0;
+  do {
+    idx = Math.floor(Math.random() * pool.length);
+    tries++;
+  } while (usedIndices.includes(idx + roundIndex * 1000) && tries < 50);
+  usedIndices.push(idx + roundIndex * 1000);
+  return pool[idx];
+}
+
+function drawTree() {
+  const svg = document.getElementById('tree-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const sky = document.createElementNS(ns, 'rect');
+  sky.setAttribute('x','0'); sky.setAttribute('y','0');
+  sky.setAttribute('width','220'); sky.setAttribute('height','570');
+  sky.setAttribute('rx','12'); sky.setAttribute('fill','#eaf6ff');
+  svg.appendChild(sky);
+
+  const trunk = document.createElementNS(ns, 'rect');
+  trunk.setAttribute('x','105'); trunk.setAttribute('y','72');
+  trunk.setAttribute('width','18'); trunk.setAttribute('height','460');
+  trunk.setAttribute('rx','8'); trunk.setAttribute('fill','#A0631A');
+  svg.appendChild(trunk);
+
+  branchData.forEach((b) => {
+    const br = document.createElementNS(ns, 'line');
+    br.setAttribute('x1','114'); br.setAttribute('y1', b.y);
+    br.setAttribute('x2', 114 + b.dir * b.len);
+    br.setAttribute('y2', b.y - 12);
+    br.setAttribute('stroke','#A0631A');
+    br.setAttribute('stroke-width','5');
+    br.setAttribute('stroke-linecap','round');
+    svg.appendChild(br);
+
+    const lx = 114 + b.dir * b.len;
+    const ly = b.y - 18;
+    for (let li = 0; li < 2; li++) {
+      const leaf = document.createElementNS(ns, 'ellipse');
+      leaf.setAttribute('cx', lx + b.dir * (10 + li * 8));
+      leaf.setAttribute('cy', ly - li * 7);
+      leaf.setAttribute('rx', li === 0 ? '16' : '10');
+      leaf.setAttribute('ry', li === 0 ? '7'  : '5');
+      leaf.setAttribute('fill', li === 0 ? '#5DCAA5' : '#1D9E75');
+      leaf.setAttribute('opacity','0.88');
+      svg.appendChild(leaf);
+    }
+  });
+
+  [[-34,6],[-22,-2],[-10,-7],[4,-9],[18,-7],[30,-2],[42,6]].forEach(([ox,oy]) => {
+    const e = document.createElementNS(ns, 'ellipse');
+    e.setAttribute('cx', 114 + ox); e.setAttribute('cy', 76 + oy);
+    e.setAttribute('rx','20'); e.setAttribute('ry','10');
+    e.setAttribute('fill','#5DCAA5'); e.setAttribute('opacity','0.92');
+    svg.appendChild(e);
+  });
+
+  const banan = document.createElementNS(ns, 'text');
+  banan.setAttribute('x','114');
+  banan.setAttribute('y','62');
+  banan.setAttribute('text-anchor','middle');
+  banan.setAttribute('font-size','22');
+  banan.textContent = '🍌';
+  svg.appendChild(banan);
+
+  const monkey = document.createElementNS(ns, 'text');
+  monkey.setAttribute('id','monkey');
+  monkey.setAttribute('x','114');
+  monkey.setAttribute('text-anchor','middle');
+  monkey.setAttribute('font-size','28');
+  monkey.textContent = '🐒';
+  svg.appendChild(monkey);
+
+  updateMonkeyPos();
+}
+
+function getMonkeyY(p) {
+  if (p >= STEPS) return 56;
+  return branchData[p].y + 5;
+}
+
+function updateMonkeyPos() {
+  const m = document.getElementById('monkey');
+  if (m) m.setAttribute('y', getMonkeyY(pos));
+}
+
+function buildInputRow(q) {
+  const row = document.getElementById('input-row');
+  row.innerHTML = '';
+  q.answers.forEach((_, i) => {
+    const part = document.createElement('div');
+    part.className = 'answer-part';
+    const inp = document.createElement('input');
+    inp.type = 'number';
+    inp.id = 'ans_' + i;
+    inp.step = 'any';
+    inp.className = q.answers.length === 1 ? 'wide' : '';
+    inp.setAttribute('autocomplete','off');
+    if (i === 0) setTimeout(() => inp.focus(), 50);
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+    part.appendChild(inp);
+    if (q.units && q.units[i]) {
+      const ul = document.createElement('span');
+      ul.className = 'unit-label';
+      ul.textContent = q.units[i];
+      part.appendChild(ul);
+    }
+    row.appendChild(part);
+  });
+}
+
+function newQuestion() {
+  currentQuestion = pickQuestion(round - 1);
+  document.getElementById('question').textContent = currentQuestion.text;
+  buildInputRow(currentQuestion);
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+}
+
+function numEq(a, b) {
+  return Math.abs(a - b) < 0.001;
+}
+
+function checkAnswer() {
+  if (animating || !currentQuestion) return;
+  const q = currentQuestion;
+  let allOk = true;
+  for (let i = 0; i < q.answers.length; i++) {
+    const inp = document.getElementById('ans_' + i);
+    const val = parseFloat(inp.value.replace(',', '.'));
+    if (isNaN(val) || !numEq(val, q.answers[i])) { allOk = false; break; }
+  }
+
+  const fb = document.getElementById('feedback');
+  animating = true;
+
+  if (allOk) {
+    correctTotal++;
+    document.getElementById('score-ok').textContent = correctTotal;
+    fb.textContent = '✓ Richtig! Der Affe klettert hoch!';
+    fb.className = 'fb-ok';
+    pos = Math.min(pos + 1, STEPS);
+    updateMonkeyPos();
+    if (pos >= STEPS) {
+      setTimeout(celebrateBanana, 500);
+      return;
+    }
+  } else {
+    wrongTotal++;
+    document.getElementById('score-err').textContent = wrongTotal;
+    const correctStr = q.answers.map((a,i) => a + (q.units[i] ? ' ' + q.units[i] : '')).join(' | ');
+    fb.textContent = `✗ Falsch! Richtig: ${correctStr}. Affe fällt runter!`;
+    fb.className = 'fb-err';
+    pos = Math.max(pos - 1, 0);
+    updateMonkeyPos();
+  }
+
+  setTimeout(() => { animating = false; newQuestion(); }, 1100);
+}
+
+function updateDifficultyBadge() {
+  const badge = document.getElementById('difficulty-badge');
+  badge.textContent = 'Runde ' + round + ' – ' + ROUND_NAMES[round - 1];
+  badge.className = 'diff-easy'; // reset
+  badge.className = ROUND_DIFF[round - 1];
+  document.getElementById('level-display').textContent = LEVEL_ICONS[round - 1];
+  document.getElementById('round-display').textContent = round + ' / 5';
+}
+
+function celebrateBanana() {
+  bananasEarned++;
+  const bEl = document.getElementById('b' + (bananasEarned - 1));
+  if (bEl) bEl.classList.add('earned');
+  document.getElementById('progress-bar').style.width = (bananasEarned * 20) + '%';
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = '🍌 Banane ' + bananasEarned + ' von 5 geholt!';
+  fb.className = 'fb-ok';
+
+  if (bananasEarned >= 5) {
+    setTimeout(showEnd, 900);
+    return;
+  }
+
+  round++;
+  updateDifficultyBadge();
+  pos = 0;
+  updateMonkeyPos();
+  setTimeout(() => { animating = false; newQuestion(); }, 1400);
+}
+
+function showEnd() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'none';
+  const es = document.getElementById('end-screen');
+  es.style.display = 'flex';
+  es.querySelector('#end-stats').innerHTML =
+    'Du hast <strong>' + correctTotal + '</strong> Aufgaben richtig und <strong>' + wrongTotal + '</strong> falsch beantwortet.';
+}
+
+function initGame() {
+  pos = 0; bananasEarned = 0; round = 1;
+  correctTotal = 0; wrongTotal = 0; animating = false;
+  usedIndices = [];
+  document.getElementById('score-ok').textContent  = '0';
+  document.getElementById('score-err').textContent = '0';
+  document.getElementById('progress-bar').style.width = '0%';
+  for (let i = 0; i < 5; i++) {
+    const b = document.getElementById('b' + i);
+    if (b) b.classList.remove('earned');
+  }
+  document.getElementById('game').style.display = 'flex';
+  document.getElementById('end-screen').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'inline-block';
+  updateDifficultyBadge();
+  drawTree();
+  newQuestion();
+}
+
+initGame();
+</script>
+</body>
+</html>

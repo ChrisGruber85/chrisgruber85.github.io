@@ -73,38 +73,26 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.1);
         }
 
-        .subject-btn {
+        /* Überschriften der Fächer (ehemals Buttons) */
+        .subject-header {
             background-color: var(--primary-color);
             color: white;
-            border: none;
             padding: 1rem 2rem;
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.4rem;
             border-radius: 50px;
-            cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s ease;
             margin-bottom: 1.5rem;
+            display: inline-block;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .card-physik .subject-btn {
+        .card-physik .subject-header {
             background-color: var(--secondary-color);
         }
 
-        .subject-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        /* Versteckte Unterpunkte standardmäßig */
+        /* Die Listen sind jetzt standardmäßig vollflächig sichtbar */
         .sub-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
             text-align: left;
-        }
-
-        .sub-menu.active {
-            max-height: 300px; /* Genug Platz für die Links */
         }
 
         .sub-menu ul {
@@ -121,10 +109,11 @@
             text-decoration: none;
             color: var(--text-color);
             background-color: var(--bg-color);
-            padding: 0.8rem 1.2rem;
+            padding: 1rem 1.2rem;
             border-radius: 8px;
             border-left: 4px solid var(--primary-color);
-            transition: background-color 0.2s, transform 0.2s;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            font-weight: 500;
         }
 
         .card-physik .sub-menu a {
@@ -134,6 +123,7 @@
         .sub-menu a:hover {
             background-color: #e2e8f0;
             transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         footer {
@@ -156,8 +146,8 @@
     <main>
         <!-- Bereich Mathematik -->
         <div class="subject-card card-mathe">
-            <button class="subject-btn" onclick="toggleMenu('mathe-menu')">📚 Mathematik</button>
-            <div id="mathe-menu" class="sub-menu">
+            <h2 class="subject-header">📚 Mathematik</h2>
+            <div class="sub-menu">
                 <ul>
                     <li>
                         <a href="https://chrisgruber85.github.io/laengenmasse_affe_spiel.html">
@@ -169,14 +159,19 @@
                             ⚖️ Masseeinheiten
                         </a>
                     </li>
+                    <li>
+                        <a href="https://chrisgruber85.github.io/rechteck_quadrat_affe_spiel.html">
+                            🟦 Rechteck und Quadrat
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
 
         <!-- Bereich Physik -->
         <div class="subject-card card-physik">
-            <button class="subject-btn" onclick="toggleMenu('physik-menu')">⚡ Physik</button>
-            <div id="physik-menu" class="sub-menu">
+            <h2 class="subject-header">⚡ Physik</h2>
+            <div class="sub-menu">
                 <ul>
                     <li>
                         <a href="https://chrisgruber85.github.io/Stromstaerke_Versuch.html">
@@ -192,19 +187,5 @@
         <p>&copy; 2026 Total Klar Lernplattform | Bereitgestellt über GitHub Pages</p>
     </footer>
 
-    <script>
-        function toggleMenu(menuId) {
-            const menu = document.getElementById(menuId);
-            // Wenn das Menü bereits offen ist, schließe es
-            if (menu.classList.contains('active')) {
-                menu.classList.remove('active');
-            } else {
-                // Schließe zuerst alle anderen Menüs (optional, falls immer nur eins offen sein soll)
-                document.querySelectorAll('.sub-menu').forEach(m => m.classList.remove('active'));
-                // Öffne das angeklickte Menü
-                menu.classList.add('active');
-            }
-        }
-    </script>
 </body>
 </html>

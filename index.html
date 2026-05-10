@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Klar - Durch Übung zum Erfolg</title>
+    <style>
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #9B59B6;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .subject-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .subject-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-physik .subject-btn {
+            background-color: var(--secondary-color);
+        }
+
+        .subject-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        /* Versteckte Unterpunkte standardmäßig */
+        .sub-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            text-align: left;
+        }
+
+        .sub-menu.active {
+            max-height: 300px; /* Genug Platz für die Links */
+        }
+
+        .sub-menu ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sub-menu li {
+            margin-bottom: 0.8rem;
+        }
+
+        .sub-menu a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .card-physik .sub-menu a {
+            border-left-color: var(--secondary-color);
+        }
+
+        .sub-menu a:hover {
+            background-color: #e2e8f0;
+            transform: translateX(5px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Total Klar</h1>
+        <p>Durch Übung zum Erfolg</p>
+    </header>
+
+    <main>
+        <!-- Bereich Mathematik -->
+        <div class="subject-card card-mathe">
+            <button class="subject-btn" onclick="toggleMenu('mathe-menu')">📚 Mathematik</button>
+            <div id="mathe-menu" class="sub-menu">
+                <ul>
+                    <li>
+                        <a href="https://chrisgruber85.github.io/laengenmasse_affe_spiel.html">
+                            📏 Längenmaße
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://chrisgruber85.github.io/masseneinheiten_affe_spiel.html">
+                            ⚖️ Masseeinheiten
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bereich Physik -->
+        <div class="subject-card card-physik">
+            <button class="subject-btn" onclick="toggleMenu('physik-menu')">⚡ Physik</button>
+            <div id="physik-menu" class="sub-menu">
+                <ul>
+                    <li>
+                        <a href="https://chrisgruber85.github.io/Stromstaerke_Versuch.html">
+                            🔌 Messung der Stromstärke
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Total Klar Lernplattform | Bereitgestellt über GitHub Pages</p>
+    </footer>
+
+    <script>
+        function toggleMenu(menuId) {
+            const menu = document.getElementById(menuId);
+            // Wenn das Menü bereits offen ist, schließe es
+            if (menu.classList.contains('active')) {
+                menu.classList.remove('active');
+            } else {
+                // Schließe zuerst alle anderen Menüs (optional, falls immer nur eins offen sein soll)
+                document.querySelectorAll('.sub-menu').forEach(m => m.classList.remove('active'));
+                // Öffne das angeklickte Menü
+                menu.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>

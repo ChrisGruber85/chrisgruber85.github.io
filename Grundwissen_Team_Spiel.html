@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team-Challenge: Schnelle Antwort</title>
+    <style>
+        :root {
+            --green: #4caf50;
+            --red: #f44336;
+            --yellow: #ffeb3b;
+            --blue: #2196f3;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        /* Frage-Bereich */
+        #question-container {
+            background-color: white;
+            width: 90%;
+            max-width: 1000px;
+            min-height: 200px;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        #question-text {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        button.main-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button.main-btn:hover {
+            background-color: #1a252f;
+            transform: scale(1.05);
+        }
+
+        /* Teams-Bereich */
+        #teams-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: space-between;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .team-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            width: 23%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 10px solid #ccc;
+        }
+
+        .team-green { border-top-color: var(--green); }
+        .team-red { border-top-color: var(--red); }
+        .team-yellow { border-top-color: var(--yellow); }
+        .team-blue { border-top-color: var(--blue); }
+
+        .team-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .team-green .team-name { color: var(--green); }
+        .team-red .team-name { color: var(--red); }
+        .team-yellow .team-name { color: #d4c000; } /* Darker yellow for text readability */
+        .team-blue .team-name { color: var(--blue); }
+
+        .trophies {
+            font-size: 2.5rem;
+            min-height: 50px;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+
+        /* Spielfeld (Track) */
+        .track {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .step {
+            width: 80%;
+            height: 40px;
+            background-color: #eee;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #aaa;
+            transition: all 0.3s;
+        }
+
+        .step.active {
+            background-color: #333;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .step.final.active {
+            background-color: gold;
+            color: black;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.05); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* Kontroll-Buttons */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: auto;
+        }
+
+        .ctrl-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s;
+            color: white;
+        }
+
+        .ctrl-btn:active { transform: scale(0.9); }
+        .btn-minus { background-color: #e74c3c; }
+        .btn-plus { background-color: #2ecc71; }
+
+    </style>
+</head>
+<body>
+
+    <h1>Team-Challenge „Schnelle Antwort“</h1>
+
+    <div id="question-container">
+        <div id="question-text">Klicke auf „Neue Frage“, um das Spiel zu starten!</div>
+        <button class="main-btn" onclick="nextQuestion()">Neue Frage</button>
+    </div>
+
+    <div id="teams-container">
+        <!-- Team Grün -->
+        <div class="team-card team-green">
+            <div class="team-name">Grün</div>
+            <div class="trophies" id="trophies-0"></div>
+            <div class="track" id="track-0">
+                <div class="step final" id="step-0-3">Finale!</div>
+                <div class="step" id="step-0-2">Feld 2</div>
+                <div class="step" id="step-0-1">Feld 1</div>
+                <div class="step active" id="step-0-0">Start</div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn btn-minus" onclick="moveTeam(0, -1)">-</button>
+                <button class="ctrl-btn btn-plus" onclick="moveTeam(0, 1)">+</button>
+            </div>
+        </div>
+
+        <!-- Team Rot -->
+        <div class="team-card team-red">
+            <div class="team-name">Rot</div>
+            <div class="trophies" id="trophies-1"></div>
+            <div class="track" id="track-1">
+                <div class="step final" id="step-1-3">Finale!</div>
+                <div class="step" id="step-1-2">Feld 2</div>
+                <div class="step" id="step-1-1">Feld 1</div>
+                <div class="step active" id="step-1-0">Start</div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn btn-minus" onclick="moveTeam(1, -1)">-</button>
+                <button class="ctrl-btn btn-plus" onclick="moveTeam(1, 1)">+</button>
+            </div>
+        </div>
+
+        <!-- Team Gelb -->
+        <div class="team-card team-yellow">
+            <div class="team-name">Gelb</div>
+            <div class="trophies" id="trophies-2"></div>
+            <div class="track" id="track-2">
+                <div class="step final" id="step-2-3">Finale!</div>
+                <div class="step" id="step-2-2">Feld 2</div>
+                <div class="step" id="step-2-1">Feld 1</div>
+                <div class="step active" id="step-2-0">Start</div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn btn-minus" onclick="moveTeam(2, -1)">-</button>
+                <button class="ctrl-btn btn-plus" onclick="moveTeam(2, 1)">+</button>
+            </div>
+        </div>
+
+        <!-- Team Blau -->
+        <div class="team-card team-blue">
+            <div class="team-name">Blau</div>
+            <div class="trophies" id="trophies-3"></div>
+            <div class="track" id="track-3">
+                <div class="step final" id="step-3-3">Finale!</div>
+                <div class="step" id="step-3-2">Feld 2</div>
+                <div class="step" id="step-3-1">Feld 1</div>
+                <div class="step active" id="step-3-0">Start</div>
+            </div>
+            <div class="controls">
+                <button class="ctrl-btn btn-minus" onclick="moveTeam(3, -1)">-</button>
+                <button class="ctrl-btn btn-plus" onclick="moveTeam(3, 1)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BACKEND: AUFGABENPOOL ---
+        const questionPool = [
+            // Dezimalzahlen runden
+            "[Runden] Runde 4,36 auf Zehntel.",
+            "[Runden] Runde 7,84 auf ganze Zahl.",
+            "[Runden] Runde 12,49 auf Zehntel.",
+            "[Runden] Runde 9,95 auf ganze Zahl.",
+            "[Runden] Runde 15,274 auf Hundertstel.",
+            "[Runden] Runde 3,68 auf Zehntel.",
+            "[Runden] Runde 20,444 auf Hundertstel.",
+            "[Runden] Runde 5,51 auf ganze Zahl.",
+            "[Runden] Runde 18,876 auf Zehntel.",
+            "[Runden] Runde 0,749 auf Hundertstel.",
+
+            // Dezimalbrüche
+            "[Brüche] Schreibe als Dezimalzahl: 1/10",
+            "[Brüche] Schreibe als Dezimalzahl: 3/100",
+            "[Brüche] Schreibe als Dezimalzahl: 25/10",
+            "[Brüche] Schreibe als Bruch: 0,5",
+            "[Brüche] Schreibe als Bruch: 0,25",
+            "[Brüche] Schreibe als Dezimalzahl: 7/10",
+            "[Brüche] Schreibe als Bruch: 0,75",
+            "[Brüche] Schreibe als Dezimalzahl: 9/100",
+            "[Brüche] Schreibe als Bruch: 0,2",
+            "[Brüche] Schreibe als Dezimalzahl: 45/100",
+
+            // Komma richtig setzen
+            "[Komma] Setze das Komma im Ergebnis: 3,4 + 2,1 = 55",
+            "[Komma] Setze das Komma im Ergebnis: 7,8 − 4,5 = 33",
+            "[Komma] Setze das Komma im Ergebnis: 2,5 · 4 = 100",
+            "[Komma] Setze das Komma im Ergebnis: 8,4 : 10 = 084",
+            "[Komma] Setze das Komma im Ergebnis: 12,6 + 5,3 = 179",
+            "[Komma] Setze das Komma im Ergebnis: 9,9 − 3,2 = 67",
+            "[Komma] Setze das Komma im Ergebnis: 1,5 · 6 = 90",
+            "[Komma] Setze das Komma im Ergebnis: 45,7 : 100 = 0457",
+            "[Komma] Setze das Komma im Ergebnis: 6,25 + 1,75 = 800",
+            "[Komma] Setze das Komma im Ergebnis: 350,8 : 1000 = 03508",
+
+            // Längenmaße
+            "[Länge] Wandle um: 3 m = ____ cm",
+            "[Länge] Wandle um: 450 cm = ____ m",
+            "[Länge] Wandle um: 2 km = ____ m",
+            "[Länge] Wandle um: 750 mm = ____ cm",
+            "[Länge] Wandle um: 5 m = ____ mm",
+            "[Länge] Wandle um: 1200 m = ____ km",
+            "[Länge] Wandle um: 8 cm = ____ mm",
+            "[Länge] Wandle um: 4,5 m = ____ cm",
+            "[Länge] Wandle um: 900 mm = ____ m",
+            "[Länge] Wandle um: 6 km = ____ m",
+
+            // Massenmaße
+            "[Masse] Wandle um: 2 kg = ____ g",
+            "[Masse] Wandle um: 500 g = ____ kg",
+            "[Masse] Wandle um: 3 t = ____ kg",
+            "[Masse] Wandle um: 750 g = ____ dag",
+            "[Masse] Wandle um: 4 kg = ____ mg",
+            "[Masse] Wandle um: 2500 g = ____ kg",
+            "[Masse] Wandle um: 6 dag = ____ g",
+            "[Masse] Wandle um: 1,5 kg = ____ g",
+            "[Masse] Wandle um: 7000 mg = ____ g",
+            "[Masse] Wandle um: 5 t = ____ kg",
+
+            // Rechteck und Quadrat
+            "[Flächen] Berechne den Umfang eines Rechtecks mit a = 5 cm und b = 3 cm.",
+            "[Flächen] Berechne den Flächeninhalt eines Rechtecks mit a = 4 cm und b = 6 cm.",
+            "[Flächen] Ein Quadrat hat die Seitenlänge a = 7 cm. Berechne den Umfang.",
+            "[Flächen] Ein Quadrat hat die Seitenlänge a = 5 cm. Berechne den Flächeninhalt.",
+            "[Flächen] Berechne den Umfang eines Rechtecks mit a = 9 cm und b = 4 cm.",
+            "[Flächen] Berechne den Flächeninhalt eines Quadrats mit a = 6 cm Seitenlänge.",
+            "[Text] Ein Garten ist 10 m lang und 3 m breit. Berechne die Fläche.",
+            "[Text] Ein Bilderrahmen ist 12 cm lang und 5 cm breit. Berechne den Umfang."
+        ];
+
+        // --- SPIELLOGIK ---
+        
+        let remainingQuestions = [...questionPool];
+
+        // State für die 4 Teams (0=Grün, 1=Rot, 2=Gelb, 3=Blau)
+        // position: 0=Start, 1=Feld 1, 2=Feld 2, 3=Finale
+        let teams = [
+            { name: "Grün", position: 0, points: 0 },
+            { name: "Rot", position: 0, points: 0 },
+            { name: "Gelb", position: 0, points: 0 },
+            { name: "Blau", position: 0, points: 0 }
+        ];
+
+        function nextQuestion() {
+            if (remainingQuestions.length === 0) {
+                // Fragenpool zurücksetzen, falls alle aufgebraucht sind
+                remainingQuestions = [...questionPool];
+                alert("Alle Fragen wurden einmal gespielt. Der Aufgabenpool wurde neu gemischt!");
+            }
+
+            // Zufällige Frage auswählen
+            const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+            const question = remainingQuestions[randomIndex];
+            
+            // Frage aus dem aktuellen Pool entfernen, damit keine doppelten direkt hintereinander kommen
+            remainingQuestions.splice(randomIndex, 1);
+
+            // Im Frontend anzeigen
+            document.getElementById("question-text").innerText = question;
+        }
+
+        function moveTeam(teamIndex, direction) {
+            let team = teams[teamIndex];
+
+            if (direction === 1) {
+                // Plus-Button gedrückt (Richtige Antwort)
+                if (team.position === 3) {
+                    // Team beantwortet die Finalfrage richtig!
+                    team.points++;
+                    alert("Glückwunsch! Team " + team.name + " hat die Finalfrage richtig beantwortet und gewinnt einen Punkt/Pokal! 🏆");
+                    resetAllPositions();
+                } else {
+                    // Team rückt ein Feld vor
+                    team.position++;
+                }
+            } else if (direction === -1) {
+                // Minus-Button gedrückt (Strafe / Zurück)
+                if (team.position > 0) {
+                    team.position--;
+                }
+            }
+
+            updateUI();
+        }
+
+        function resetAllPositions() {
+            teams.forEach(team => {
+                team.position = 0;
+            });
+        }
+
+        function updateUI() {
+            teams.forEach((team, index) => {
+                // Pokale updaten
+                let trophiesHtml = "";
+                for(let i=0; i<team.points; i++) {
+                    trophiesHtml += "🏆";
+                }
+                document.getElementById(`trophies-${index}`).innerHTML = trophiesHtml;
+
+                // Spielfeld (Track) updaten
+                for (let step = 0; step <= 3; step++) {
+                    let stepDiv = document.getElementById(`step-${index}-${step}`);
+                    if (team.position === step) {
+                        stepDiv.classList.add("active");
+                    } else {
+                        stepDiv.classList.remove("active");
+                    }
+                }
+            });
+        }
+
+        // Initiales Setup
+        updateUI();
+
+    </script>
+</body>
+</html>

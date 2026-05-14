@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wer knackt die Million?</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #FFC107;
+            --danger: #F44336;
+            --dark: #333;
+            --light: #f4f4f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 { color: var(--primary); }
+        h2 { color: var(--dark); }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        input[type="text"], input[type="number"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 10px 5px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.3s;
+        }
+
+        button:hover { background-color: #45a049; transform: scale(1.05); }
+        button.btn-easy { background-color: #8BC34A; }
+        button.btn-medium { background-color: #FF9800; }
+        button.btn-hard { background-color: #F44336; }
+        button.btn-back { background-color: #9E9E9E; }
+
+        .avatar-selection img, .player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        
+        .avatar-selection img.selected { border-color: var(--primary); }
+
+        .coin-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--secondary);
+            background: #fff3e0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: 2px solid var(--secondary);
+        }
+
+        .category-card {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        #feedback { font-weight: bold; margin-top: 15px; font-size: 18px; }
+        .correct { color: var(--primary); }
+        .wrong { color: var(--danger); }
+
+        /* Konfetti Animation für den Sieg */
+        .confetti {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; display: none; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- SCREEN 1: Login -->
+    <div id="screen-login" class="screen active">
+        <h1>💰 Wer knackt die Million?</h1>
+        <p>Melde dich an, um deinen Fortschritt zu speichern!</p>
+        <input type="text" id="login-name" placeholder="Dein Vorname">
+        <input type="text" id="login-class" placeholder="Deine Klasse (z.B. 4a)">
+        <br>
+        <button onclick="login()">Los geht's!</button>
+    </div>
+
+    <!-- SCREEN 2: Avatar Auswahl -->
+    <div id="screen-avatar" class="screen">
+        <h2>Wähle deinen Avatar</h2>
+        <div class="avatar-selection" id="avatar-container">
+            <!-- Avatare werden per JS generiert (Emojis) -->
+        </div>
+        <button onclick="saveAvatar()">Speichern & Spielen</button>
+    </div>
+
+    <!-- SCREEN 3: Dashboard -->
+    <div id="screen-dashboard" class="screen">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div id="player-info" style="font-size: 18px; font-weight: bold;"></div>
+            <div id="player-avatar-display" style="font-size: 40px;"></div>
+        </div>
+        
+        <div class="coin-display">
+            🪙 <span id="coin-count">0</span> Coins
+        </div>
+
+        <h3>Wähle eine Aufgabe:</h3>
+        
+        <div class="category-card">
+            <h4>Längen & Massen umwandeln</h4>
+            <button class="btn-easy" onclick="startQuiz('umwandlungen', 'leicht')">Leicht (+5k)</button>
+            <button class="btn-medium" onclick="startQuiz('umwandlungen', 'mittel')">Mittel (+15k)</button>
+            <button class="btn-hard" onclick="startQuiz('umwandlungen', 'schwer')">Schwer (+30k)</button>
+        </div>
+
+        <div class="category-card">
+            <h4>Dezimalzahlen rechnen</h4>
+            <button class="btn-easy" onclick="startQuiz('dezimal', 'leicht')">Leicht (+5k)</button>
+            <button class="btn-medium" onclick="startQuiz('dezimal', 'mittel')">Mittel (+15k)</button>
+            <button class="btn-hard" onclick="startQuiz('dezimal', 'schwer')">Schwer (+30k)</button>
+        </div>
+
+        <div class="category-card">
+            <h4>Rechteck & Quadrat</h4>
+            <button class="btn-easy" onclick="startQuiz('geometrie', 'leicht')">Leicht (+5k)</button>
+            <button class="btn-medium" onclick="startQuiz('geometrie', 'mittel')">Mittel (+15k)</button>
+            <button class="btn-hard" onclick="startQuiz('geometrie', 'schwer')">Schwer (+30k)</button>
+        </div>
+
+        <button class="btn-back" onclick="logout()" style="margin-top: 20px;">Abmelden</button>
+    </div>
+
+    <!-- SCREEN 4: Quiz -->
+    <div id="screen-quiz" class="screen">
+        <h2>Aufgabe lösen</h2>
+        <div class="coin-display" style="font-size: 18px; padding: 5px 10px;">
+            Mögliche Coins: <span id="reward-display"></span>
+        </div>
+        <h3 id="question-text" style="margin: 20px 0;"></h3>
+        
+        <input type="text" id="answer-input" placeholder="Deine Antwort hier...">
+        <br>
+        <button onclick="checkAnswer()">Antworten</button>
+        <button class="btn-back" onclick="showScreen('screen-dashboard')">Abbrechen</button>
+        
+        <div id="feedback"></div>
+    </div>
+
+    <!-- SCREEN 5: Sieg! -->
+    <div id="screen-win" class="screen">
+        <h1>🎉 DU HAST DIE MILLION GEKNACKT! 🎉</h1>
+        <div style="font-size: 80px; margin: 20px 0;">🏆</div>
+        <p>Herzlichen Glückwunsch, <span id="win-name"></span>!</p>
+        <h2 class="correct">Bitte informiere jetzt deine Lehrperson!</h2>
+        <button onclick="resetGame()">Neues Spiel starten</button>
+    </div>
+
+</div>
+
+<script>
+    // --- DATENBANK FÜR AUFGABEN ---
+    // Hier kannst du weitere Aufgaben hinzufügen. 
+    // Format: { q: "Frage", a: "Antwort" }
+    // Bei Zahlen: Komma oder Punkt ist beides okay, das Skript wandelt es um.
+    const questions = {
+        umwandlungen: {
+            leicht: [
+                { q: "3 km = ___ m", a: "3000" },
+                { q: "1 km = ___ m", a: "1000" },
+                { q: "4 m = ___ dm", a: "40" },
+                { q: "1 kg = ___ dag", a: "100" },
+                { q: "1 t = ___ kg", a: "1000" }
+            ],
+            mittel: [
+                { q: "3000 m = ___ km", a: "3" },
+                { q: "25 cm = ___ mm", a: "250" },
+                { q: "1500 kg = ___ t (Dezimalzahl!)", a: "1.5" },
+                { q: "250 dag = ___ kg (Dezimalzahl!)", a: "2.5" }
+            ],
+            schwer: [
+                { q: "1,5 t = ___ kg", a: "1500" },
+                { q: "0,75 kg = ___ g", a: "750" },
+                { q: "3 t 250 kg = ___ kg", a: "3250" }
+            ]
+        },
+        dezimal: {
+            leicht: [
+                { q: "3,4 + 2,1 =", a: "5.5" },
+                { q: "8,7 - 3,2 =", a: "5.5" },
+                { q: "8,4 : 10 =", a: "0.84" },
+                { q: "Schreibe als Dezimalzahl: 3/10", a: "0.3" }
+            ],
+            mittel: [
+                { q: "4,56 + 3,27 =", a: "7.83" },
+                { q: "2,5 * 1,2 =", a: "3" },
+                { q: "Runde 7,995 auf Hundertstel", a: "8.00" },
+                { q: "Schreibe 3/4 als Dezimalzahl", a: "0.75" }
+            ],
+            schwer: [
+                { q: "12,345 + 7,655 =", a: "20" },
+                { q: "3,75 * 2,4 =", a: "9" },
+                { q: "Schreibe 7/8 als Dezimalzahl", a: "0.875" }
+            ]
+        },
+        geometrie: {
+            leicht: [
+                { q: "Ein Quadrat hat wie viele gleich lange Seiten?", a: "4" },
+                { q: "Wie viele Ecken hat ein Rechteck?", a: "4" },
+                { q: "Wie viele rechte Winkel hat ein Quadrat?", a: "4" },
+                { q: "Umfang Rechteck: 4 cm und 6 cm. U = ___", a: "20" }
+            ],
+            mittel: [
+                { q: "Fläche Rechteck: 4 cm mal 6 cm. A = ___", a: "24" },
+                { q: "Umfang Quadrat: Seite 5 cm. U = ___", a: "20" },
+                { q: "Fläche Quadrat: Seite 7 cm. A = ___", a: "49" }
+            ],
+            schwer: [
+                { q: "Ein Quadrat hat eine Fläche von 36 cm². Wie lang ist eine Seite in cm?", a: "6" },
+                { q: "Ein Rechteck hat einen Umfang von 20 cm, die Länge ist 6 cm. Wie breit ist es in cm?", a: "4" },
+                { q: "Ein Quadrat hat einen Umfang von 40 cm. Wie lang ist eine Seite in cm?", a: "10" }
+            ]
+        }
+    };
+
+    // Belohnungen & Strafen
+    const rewards = {
+        leicht: { win: 5000, lose: 2000 },
+        mittel: { win: 15000, lose: 5000 },
+        schwer: { win: 30000, lose: 10000 }
+    };
+
+    // --- SPIEL LOGIK ---
+    let currentPlayer = null;
+    let currentQuestion = null;
+    let currentDifficulty = null;
+    const WIN_GOAL = 1000000;
+    const avatars = ["🦊", "🐼", "🐸", "🦁", "🐙", "🦄", "🐶", "🦖"];
+    let selectedAvatarTemp = null;
+
+    // Start-Funktion
+    window.onload = () => {
+        // Avatare ins HTML laden
+        const avContainer = document.getElementById('avatar-container');
+        avatars.forEach(emoji => {
+            let span = document.createElement('span');
+            span.innerText = emoji;
+            span.style.fontSize = "50px";
+            span.style.cursor = "pointer";
+            span.style.margin = "10px";
+            span.onclick = () => selectAvatar(span, emoji);
+            avContainer.appendChild(span);
+        });
+    };
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('answer-input').value = "";
+    }
+
+    function login() {
+        const name = document.getElementById('login-name').value.trim();
+        const playerClass = document.getElementById('login-class').value.trim();
+
+        if (!name || !playerClass) {
+            alert("Bitte gib deinen Vornamen und deine Klasse ein!");
+            return;
+        }
+
+        const playerId = name.toLowerCase() + "_" + playerClass.toLowerCase();
+        const savedData = localStorage.getItem(playerId);
+
+        if (savedData) {
+            currentPlayer = JSON.parse(savedData);
+            updateDashboard();
+            showScreen('screen-dashboard');
+        } else {
+            currentPlayer = { id: playerId, name: name, class: playerClass, coins: 0, avatar: null };
+            showScreen('screen-avatar');
+        }
+    }
+
+    function selectAvatar(element, emoji) {
+        Array.from(document.getElementById('avatar-container').children).forEach(c => c.style.borderBottom = "none");
+        element.style.borderBottom = "3px solid var(--primary)";
+        selectedAvatarTemp = emoji;
+    }
+
+    function saveAvatar() {
+        if (!selectedAvatarTemp) {
+            alert("Bitte wähle zuerst einen Avatar aus!");
+            return;
+        }
+        currentPlayer.avatar = selectedAvatarTemp;
+        saveProgress();
+        updateDashboard();
+        showScreen('screen-dashboard');
+    }
+
+    function saveProgress() {
+        localStorage.setItem(currentPlayer.id, JSON.stringify(currentPlayer));
+    }
+
+    function updateDashboard() {
+        document.getElementById('player-info').innerText = `${currentPlayer.name} (${currentPlayer.class})`;
+        document.getElementById('player-avatar-display').innerText = currentPlayer.avatar;
+        
+        // Animation für Coins
+        const coinSpan = document.getElementById('coin-count');
+        coinSpan.innerText = currentPlayer.coins.toLocaleString('de-DE');
+
+        if (currentPlayer.coins >= WIN_GOAL) {
+            triggerWin();
+        }
+    }
+
+    function startQuiz(category, difficulty) {
+        const pool = questions[category][difficulty];
+        if(!pool || pool.length === 0) {
+            alert("Für diese Kategorie gibt es aktuell keine Fragen.");
+            return;
+        }
+
+        currentDifficulty = difficulty;
+        currentQuestion = pool[Math.floor(Math.random() * pool.length)];
+
+        document.getElementById('reward-display').innerText = `+${rewards[difficulty].win} / -${rewards[difficulty].lose}`;
+        document.getElementById('question-text').innerText = currentQuestion.q;
+        showScreen('screen-quiz');
+        
+        // Fokus auf Eingabefeld
+        setTimeout(() => document.getElementById('answer-input').focus(), 100);
+    }
+
+    // Erlaubt das Absenden mit der Enter-Taste
+    document.getElementById('answer-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkAnswer();
+    });
+
+    function checkAnswer() {
+        if (!currentQuestion) return;
+
+        const inputRaw = document.getElementById('answer-input').value.trim();
+        if (inputRaw === "") return;
+
+        // Normalisierung: Kommas in Punkte umwandeln (für Dezimalzahlen) und alles klein schreiben
+        const inputClean = inputRaw.replace(',', '.').toLowerCase();
+        const answerClean = currentQuestion.a.replace(',', '.').toLowerCase();
+
+        const feedback = document.getElementById('feedback');
+
+        if (inputClean === answerClean) {
+            currentPlayer.coins += rewards[currentDifficulty].win;
+            feedback.innerHTML = `<span class="correct">Richtig! Du gewinnst ${rewards[currentDifficulty].win} Coins! 🚀</span>`;
+            saveProgress();
+            setTimeout(() => {
+                updateDashboard();
+                if(currentPlayer.coins < WIN_GOAL) showScreen('screen-dashboard');
+            }, 1500);
+        } else {
+            currentPlayer.coins -= rewards[currentDifficulty].lose;
+            // Keine negativen Coins
+            if (currentPlayer.coins < 0) currentPlayer.coins = 0; 
+            feedback.innerHTML = `<span class="wrong">Leider falsch! Die richtige Antwort war: ${currentQuestion.a}.<br>Du verlierst ${rewards[currentDifficulty].lose} Coins. 📉</span>`;
+            saveProgress();
+            setTimeout(() => {
+                updateDashboard();
+                showScreen('screen-dashboard');
+            }, 3000);
+        }
+        currentQuestion = null;
+    }
+
+    function triggerWin() {
+        document.getElementById('win-name').innerText = currentPlayer.name;
+        showScreen('screen-win');
+        document.body.style.backgroundColor = "#ffeb3b";
+    }
+
+    function resetGame() {
+        if(confirm("Möchtest du wirklich von vorne beginnen? Deine Coins werden auf 0 gesetzt.")) {
+            currentPlayer.coins = 0;
+            saveProgress();
+            document.body.style.backgroundColor = "var(--light)";
+            updateDashboard();
+            showScreen('screen-dashboard');
+        }
+    }
+
+    function logout() {
+        currentPlayer = null;
+        document.getElementById('login-name').value = "";
+        document.getElementById('login-class').value = "";
+        showScreen('screen-login');
+    }
+
+</script>
+
+</body>
+</html>

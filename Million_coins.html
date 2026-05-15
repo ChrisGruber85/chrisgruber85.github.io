@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wer knackt die Million?</title>
+    <!-- Kontakt-Email: deine.email@beispiel.de -->
     <style>
         :root {
             --primary: #4CAF50;
@@ -20,7 +21,8 @@
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
@@ -66,16 +68,21 @@
         button.btn-hard { background-color: #F44336; }
         button.btn-back { background-color: #9E9E9E; }
 
-        .avatar-selection img, .player-avatar {
-            width: 80px;
-            height: 80px;
+        .avatar-selection span, .player-avatar {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             margin: 10px;
             cursor: pointer;
             border: 3px solid transparent;
+            background-color: #eee;
+            color: var(--dark);
         }
         
-        .avatar-selection img.selected { border-color: var(--primary); }
+        .avatar-selection span.selected { border-color: var(--primary); background-color: #e8f5e9; }
 
         .coin-display {
             font-size: 24px;
@@ -100,10 +107,17 @@
         .correct { color: var(--primary); }
         .wrong { color: var(--danger); }
 
-        /* Konfetti Animation für den Sieg */
-        .confetti {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; display: none; z-index: 1000;
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -113,7 +127,7 @@
     
     <!-- SCREEN 1: Login -->
     <div id="screen-login" class="screen active">
-        <h1>💰 Wer knackt die Million?</h1>
+        <h1>Wer knackt die Million?</h1>
         <p>Melde dich an, um deinen Fortschritt zu speichern!</p>
         <input type="text" id="login-name" placeholder="Dein Vorname">
         <input type="text" id="login-class" placeholder="Deine Klasse (z.B. 4a)">
@@ -123,9 +137,9 @@
 
     <!-- SCREEN 2: Avatar Auswahl -->
     <div id="screen-avatar" class="screen">
-        <h2>Wähle deinen Avatar</h2>
+        <h2>Wähle dein Symbol</h2>
         <div class="avatar-selection" id="avatar-container">
-            <!-- Avatare werden per JS generiert (Emojis) -->
+            <!-- Avatare werden per JS generiert (Text-Symbole) -->
         </div>
         <button onclick="saveAvatar()">Speichern & Spielen</button>
     </div>
@@ -134,11 +148,11 @@
     <div id="screen-dashboard" class="screen">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div id="player-info" style="font-size: 18px; font-weight: bold;"></div>
-            <div id="player-avatar-display" style="font-size: 40px;"></div>
+            <div id="player-avatar-display" style="font-size: 40px; color: var(--primary);"></div>
         </div>
         
         <div class="coin-display">
-            🪙 <span id="coin-count">0</span> Coins
+            <span id="coin-count">0</span> Coins
         </div>
 
         <h3>Wähle eine Aufgabe:</h3>
@@ -185,8 +199,7 @@
 
     <!-- SCREEN 5: Sieg! -->
     <div id="screen-win" class="screen">
-        <h1>🎉 DU HAST DIE MILLION GEKNACKT! 🎉</h1>
-        <div style="font-size: 80px; margin: 20px 0;">🏆</div>
+        <h1>DU HAST DIE MILLION GEKNACKT!</h1>
         <p>Herzlichen Glückwunsch, <span id="win-name"></span>!</p>
         <h2 class="correct">Bitte informiere jetzt deine Lehrperson!</h2>
         <button onclick="resetGame()">Neues Spiel starten</button>
@@ -194,11 +207,13 @@
 
 </div>
 
+<!-- Kontaktbereich mit E-Mail-Adresse -->
+<div class="footer">
+    Fragen oder Feedback? Kontakt: <a href="mailto:deine.email@beispiel.de">deine.email@beispiel.de</a>
+</div>
+
 <script>
     // --- DATENBANK FÜR AUFGABEN ---
-    // Hier kannst du weitere Aufgaben hinzufügen. 
-    // Format: { q: "Frage", a: "Antwort" }
-    // Bei Zahlen: Komma oder Punkt ist beides okay, das Skript wandelt es um.
     const questions = {
         umwandlungen: {
             leicht: [
@@ -271,20 +286,19 @@
     let currentQuestion = null;
     let currentDifficulty = null;
     const WIN_GOAL = 1000000;
-    const avatars = ["🦊", "🐼", "🐸", "🦁", "🐙", "🦄", "🐶", "🦖"];
+    // Emojis entfernt, dafür neutrale Symbole verwendet
+    const avatars = ["★", "●", "▲", "■", "◆", "♥", "♣", "♠"];
     let selectedAvatarTemp = null;
 
     // Start-Funktion
     window.onload = () => {
         // Avatare ins HTML laden
         const avContainer = document.getElementById('avatar-container');
-        avatars.forEach(emoji => {
+        avatars.forEach(symbol => {
             let span = document.createElement('span');
-            span.innerText = emoji;
-            span.style.fontSize = "50px";
-            span.style.cursor = "pointer";
-            span.style.margin = "10px";
-            span.onclick = () => selectAvatar(span, emoji);
+            span.innerText = symbol;
+            span.style.fontSize = "30px";
+            span.onclick = () => selectAvatar(span, symbol);
             avContainer.appendChild(span);
         });
     };
@@ -318,15 +332,17 @@
         }
     }
 
-    function selectAvatar(element, emoji) {
-        Array.from(document.getElementById('avatar-container').children).forEach(c => c.style.borderBottom = "none");
-        element.style.borderBottom = "3px solid var(--primary)";
-        selectedAvatarTemp = emoji;
+    function selectAvatar(element, symbol) {
+        Array.from(document.getElementById('avatar-container').children).forEach(c => {
+            c.classList.remove('selected');
+        });
+        element.classList.add('selected');
+        selectedAvatarTemp = symbol;
     }
 
     function saveAvatar() {
         if (!selectedAvatarTemp) {
-            alert("Bitte wähle zuerst einen Avatar aus!");
+            alert("Bitte wähle zuerst ein Symbol aus!");
             return;
         }
         currentPlayer.avatar = selectedAvatarTemp;
@@ -389,7 +405,7 @@
 
         if (inputClean === answerClean) {
             currentPlayer.coins += rewards[currentDifficulty].win;
-            feedback.innerHTML = `<span class="correct">Richtig! Du gewinnst ${rewards[currentDifficulty].win} Coins! 🚀</span>`;
+            feedback.innerHTML = `<span class="correct">Richtig! Du gewinnst ${rewards[currentDifficulty].win} Coins!</span>`;
             saveProgress();
             setTimeout(() => {
                 updateDashboard();
@@ -399,7 +415,7 @@
             currentPlayer.coins -= rewards[currentDifficulty].lose;
             // Keine negativen Coins
             if (currentPlayer.coins < 0) currentPlayer.coins = 0; 
-            feedback.innerHTML = `<span class="wrong">Leider falsch! Die richtige Antwort war: ${currentQuestion.a}.<br>Du verlierst ${rewards[currentDifficulty].lose} Coins. 📉</span>`;
+            feedback.innerHTML = `<span class="wrong">Leider falsch! Die richtige Antwort war: ${currentQuestion.a}.<br>Du verlierst ${rewards[currentDifficulty].lose} Coins.</span>`;
             saveProgress();
             setTimeout(() => {
                 updateDashboard();

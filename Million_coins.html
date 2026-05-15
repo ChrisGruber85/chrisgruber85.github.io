@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wer knackt die Million?</title>
-    <!-- Kontakt-Email: christoph.gruber@edu.magwien.gv.at -->
     <style>
         :root {
             --primary: #4CAF50;
@@ -67,6 +66,8 @@
         button.btn-medium { background-color: #FF9800; }
         button.btn-hard { background-color: #F44336; }
         button.btn-back { background-color: #9E9E9E; }
+        button.btn-blue { background-color: #2196F3; }
+        button.btn-blue:hover { background-color: #1E88E5; }
 
         .avatar-selection span, .player-avatar {
             display: inline-flex;
@@ -202,12 +203,16 @@
         <h1>DU HAST DIE MILLION GEKNACKT!</h1>
         <p>Herzlichen Glückwunsch, <span id="win-name"></span>!</p>
         <h2 class="correct">Bitte informiere jetzt deine Lehrperson!</h2>
+        
+        <!-- NEUER BUTTON -->
+        <button class="btn-blue" onclick="notifyTeacher()" style="margin-bottom: 20px;">Herr Gruber informieren</button>
+        <br>
         <button onclick="resetGame()">Neues Spiel starten</button>
     </div>
 
 </div>
 
-<!-- Kontaktbereich mit E-Mail-Adresse -->
+<!-- Kontaktbereich mit angepasster E-Mail-Adresse -->
 <div class="footer">
     Fragen oder Feedback? Kontakt: <a href="mailto:christoph.gruber@edu.magwien.gv.at">christoph.gruber@edu.magwien.gv.at</a>
 </div>
@@ -429,6 +434,16 @@
         document.getElementById('win-name').innerText = currentPlayer.name;
         showScreen('screen-win');
         document.body.style.backgroundColor = "#ffeb3b";
+    }
+
+    // Funktion für den E-Mail Button
+    function notifyTeacher() {
+        const email = "christoph.gruber@edu.magwien.gv.at";
+        const subject = encodeURIComponent("Wer knackt die Million? - Ziel erreicht!");
+        const body = encodeURIComponent(
+            `Hallo Herr Gruber,\n\nich habe im Spiel "Wer knackt die Million?" die 1.000.000 Coins geknackt!\n\nName: ${currentPlayer.name}\nKlasse: ${currentPlayer.class}\n\nViele Grüße!`
+        );
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
 
     function resetGame() {

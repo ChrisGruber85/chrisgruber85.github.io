@@ -14,6 +14,7 @@
             --c-digi: #FF7BCB;
             --c-games: #4A8DF2;
             --bg-color: #ffffff;
+            --hero-bg-color: #fcfdfe;
         }
 
         * {
@@ -31,20 +32,29 @@
             min-height: 100vh;
         }
 
-        /* --- Hero Bereich (Oben) --- */
+        /* --- Modern Hero Wrapper --- */
+        .modern-hero-wrapper {
+            background-color: var(--hero-bg-color);
+            width: 100%;
+            padding-bottom: 60px; 
+        }
+
+        /* --- Hero Section --- */
         .hero {
             display: flex;
             flex-wrap: wrap;
             max-width: 1200px;
-            margin: 60px auto;
+            margin: 60px auto 0 auto;
             align-items: center;
-            padding: 0 20px;
-            gap: 50px;
-            flex: 1;
+            padding: 40px 20px;
+            gap: 60px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
         }
 
         .hero-image {
-            flex: 1;
+            flex: 1.1;
             min-width: 300px;
             position: relative;
         }
@@ -53,51 +63,77 @@
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 4px;
-            /* Simuliert die bunten Blöcke im Hintergrund des Fotos */
-            box-shadow: -15px 15px 0px 0px rgba(255, 123, 203, 0.4), 
-                        -30px 30px 0px 0px rgba(255, 209, 0, 0.4);
+            border-radius: 12px;
+            box-shadow: -10px 10px 25px rgba(255, 123, 203, 0.25), 
+                        -20px 20px 45px rgba(255, 209, 0, 0.15);
         }
 
         .hero-text {
             flex: 1;
             min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
+        /* Hauptüberschrift TOTAL KLAR */
         .hero-text h1 {
             color: var(--c-blue-text);
-            font-size: 3.5rem;
-            line-height: 1.2;
-            margin-bottom: 25px;
+            font-size: 3.8rem;
+            line-height: 1.1;
+            margin-bottom: 5px; /* Kleinerer Abstand zum Slogan */
             text-transform: uppercase;
-            letter-spacing: 1px;
             font-weight: 800;
         }
 
-        .hero-text h2 {
+        /* Unterüberschrift / Slogan in Blau */
+        .hero-text h2.slogan {
+            color: var(--c-blue-text);
+            font-size: 3.2rem;
+            line-height: 1.2;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        /* Grauer Beschreibungstext */
+        .hero-text p.description {
             color: var(--c-dark-text);
-            font-size: 2.2rem;
-            margin-bottom: 15px;
+            font-size: 1.8rem;
+            line-height: 1.4;
+            margin-bottom: 30px;
             font-weight: 700;
         }
 
-        .credits {
-            font-size: 0.9rem;
-            color: #888;
+        /* Call-to-Action Button */
+        .cta-button {
+            display: inline-block;
+            padding: 14px 30px;
+            background-color: var(--c-blue-text);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
             font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(69, 120, 212, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .credits a {
-            color: #888;
-            text-decoration: underline;
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(69, 120, 212, 0.4);
         }
 
-        /* --- Kategorien / Fächer (Unten) --- */
+        /* --- Kategorien / Fächer --- */
         .categories-container {
             display: flex;
             width: 100%;
             flex-wrap: wrap;
-            margin-top: 40px;
+            margin-top: 0;
+            padding: 0 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .category-card {
@@ -109,7 +145,6 @@
             padding: 50px 20px;
             color: white;
             text-align: center;
-            /* Sorgt dafür, dass die Blöcke auf großen Bildschirmen gleich lang wirken */
             min-height: 400px; 
         }
 
@@ -167,26 +202,32 @@
 
         /* --- Responsive Design für Smartphones --- */
         @media (max-width: 900px) {
-            .hero-text h1 { font-size: 2.5rem; }
-            .hero-text h2 { font-size: 1.6rem; }
+            .hero-text h1 { font-size: 3rem; }
+            .hero-text h2.slogan { font-size: 2.5rem; }
+            .hero-text p.description { font-size: 1.5rem; }
             .categories-container { flex-direction: column; }
             .category-card { min-height: auto; padding: 40px 20px; }
+            .hero { gap: 40px; padding: 30px 15px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="hero">
-        <div class="hero-image">
-            <img src="schuelergruppe_happy.png" alt="Schülergruppe am Spind">
-        </div>
-        <div class="hero-text">
-            <h1>Total Klar<br>Durch Übung<br>Zum Erfolg</h1>
-            <h2>Digitale Lernangebote, Aufgaben und Übungen</h2>
-        </div>
-    </header>
+    <div class="modern-hero-wrapper">
+        <header class="hero">
+            <div class="hero-image">
+                <img src="schuelergruppe_happy.png" alt="Schülergruppe am Spind">
+            </div>
+            <div class="hero-text">
+                <h1>TOTAL KLAR</h1>
+                <h2 class="slogan">DURCH ÜBUNG<br>ZUM ERFOLG</h2>
+                <p class="description">Digitale Lernangebote, Aufgaben und Übungen</p>
+                <a href="#kategorien" class="cta-button">Zu den Übungen</a>
+            </div>
+        </header>
+    </div>
 
-    <main class="categories-container">
+    <main class="categories-container" id="kategorien">
         
         <div class="category-card cat-mathe">
             <i class="fa-solid fa-book-open-reader"></i>
@@ -211,12 +252,12 @@
         <div class="category-card cat-digi">
             <i class="fa-solid fa-chalkboard-user"></i>
             <h3>Digi</h3>
-            </div>
+        </div>
 
         <div class="category-card cat-games">
             <i class="fa-solid fa-vr-cardboard"></i>
             <h3>Games</h3>
-            </div>
+        </div>
 
     </main>
 

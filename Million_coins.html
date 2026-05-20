@@ -204,7 +204,7 @@
         <p>Herzlichen Glückwunsch, <span id="win-name"></span>!</p>
         <h2 class="correct">Bitte informiere jetzt deine Lehrperson!</h2>
         
-        <!-- NEUER BUTTON -->
+        <!-- BUTTON ZUR EMAIL-BENACHRICHTIGUNG -->
         <button class="btn-blue" onclick="notifyTeacher()" style="margin-bottom: 20px;">Herr Gruber informieren</button>
         <br>
         <button onclick="resetGame()">Neues Spiel starten</button>
@@ -212,7 +212,7 @@
 
 </div>
 
-<!-- Kontaktbereich mit angepasster E-Mail-Adresse -->
+<!-- Kontaktbereich -->
 <div class="footer">
     Fragen oder Feedback? Kontakt: <a href="mailto:christoph.gruber@edu.magwien.gv.at">christoph.gruber@edu.magwien.gv.at</a>
 </div>
@@ -291,13 +291,10 @@
     let currentQuestion = null;
     let currentDifficulty = null;
     const WIN_GOAL = 1000000;
-    // Emojis entfernt, dafür neutrale Symbole verwendet
     const avatars = ["★", "●", "▲", "■", "◆", "♥", "♣", "♠"];
     let selectedAvatarTemp = null;
 
-    // Start-Funktion
     window.onload = () => {
-        // Avatare ins HTML laden
         const avContainer = document.getElementById('avatar-container');
         avatars.forEach(symbol => {
             let span = document.createElement('span');
@@ -329,10 +326,19 @@
 
         if (savedData) {
             currentPlayer = JSON.parse(savedData);
+            // Für Kompatibilität mit alten Speicherständen:
+            if (!currentPlayer.pools) currentPlayer.pools = {};
             updateDashboard();
             showScreen('screen-dashboard');
         } else {
-            currentPlayer = { id: playerId, name: name, class: playerClass, coins: 0, avatar: null };
+            currentPlayer = { 
+                id: playerId, 
+                name: name, 
+                class: playerClass, 
+                coins: 0, 
+                avatar: null,
+                pools: {} // Hier speichern wir die gemischten Fragen-Reihenfolgen
+            };
             showScreen('screen-avatar');
         }
     }
@@ -364,7 +370,6 @@
         document.getElementById('player-info').innerText = `${currentPlayer.name} (${currentPlayer.class})`;
         document.getElementById('player-avatar-display').innerText = currentPlayer.avatar;
         
-        // Animation für Coins
         const coinSpan = document.getElementById('coin-count');
         coinSpan.innerText = currentPlayer.coins.toLocaleString('de-DE');
 
@@ -374,24 +379,43 @@
     }
 
     function startQuiz(category, difficulty) {
-        const pool = questions[category][difficulty];
-        if(!pool || pool.length === 0) {
+        const poolArray = questions[category][difficulty];
+        if(!poolArray || poolArray.length === 0) {
             alert("Für diese Kategorie gibt es aktuell keine Fragen.");
             return;
         }
 
+        const poolKey = category + "_" + difficulty;
+
+        // Wenn der Spieler noch keine Misch-Reihenfolge für diese Kategorie hat 
+        // oder alle Fragen daraus schon beantwortet wurden -> neu mischen!
+        if (!currentPlayer.pools[poolKey] || currentPlayer.pools[poolKey].length === 0) {
+            let indices = [];
+            for (let i = 0; i < poolArray.length; i++) {
+                indices.push(i);
+            }
+            // Array zufällig mischen (Fisher-Yates Shuffle)
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            currentPlayer.pools[poolKey] = indices;
+        }
+
+        // Nächste Frage aus dem gemischten Stapel ziehen und aus dem Stapel entfernen
+        const questionIndex = currentPlayer.pools[poolKey].pop();
+        saveProgress(); // Fortschritt direkt speichern, damit Neuladen die Frage überspringt
+
         currentDifficulty = difficulty;
-        currentQuestion = pool[Math.floor(Math.random() * pool.length)];
+        currentQuestion = poolArray[questionIndex];
 
         document.getElementById('reward-display').innerText = `+${rewards[difficulty].win} / -${rewards[difficulty].lose}`;
         document.getElementById('question-text').innerText = currentQuestion.q;
         showScreen('screen-quiz');
         
-        // Fokus auf Eingabefeld
         setTimeout(() => document.getElementById('answer-input').focus(), 100);
     }
 
-    // Erlaubt das Absenden mit der Enter-Taste
     document.getElementById('answer-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') checkAnswer();
     });
@@ -402,7 +426,6 @@
         const inputRaw = document.getElementById('answer-input').value.trim();
         if (inputRaw === "") return;
 
-        // Normalisierung: Kommas in Punkte umwandeln (für Dezimalzahlen) und alles klein schreiben
         const inputClean = inputRaw.replace(',', '.').toLowerCase();
         const answerClean = currentQuestion.a.replace(',', '.').toLowerCase();
 
@@ -418,7 +441,6 @@
             }, 1500);
         } else {
             currentPlayer.coins -= rewards[currentDifficulty].lose;
-            // Keine negativen Coins
             if (currentPlayer.coins < 0) currentPlayer.coins = 0; 
             feedback.innerHTML = `<span class="wrong">Leider falsch! Die richtige Antwort war: ${currentQuestion.a}.<br>Du verlierst ${rewards[currentDifficulty].lose} Coins.</span>`;
             saveProgress();
@@ -436,7 +458,6 @@
         document.body.style.backgroundColor = "#ffeb3b";
     }
 
-    // Funktion für den E-Mail Button
     function notifyTeacher() {
         const email = "christoph.gruber@edu.magwien.gv.at";
         const subject = encodeURIComponent("Wer knackt die Million? - Ziel erreicht!");
@@ -449,6 +470,8 @@
     function resetGame() {
         if(confirm("Möchtest du wirklich von vorne beginnen? Deine Coins werden auf 0 gesetzt.")) {
             currentPlayer.coins = 0;
+            // Lösche auch die bisherige Fragen-Historie für einen frischen Start
+            currentPlayer.pools = {};
             saveProgress();
             document.body.style.backgroundColor = "var(--light)";
             updateDashboard();

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physik-Arbeitsblatt: Reihenschaltung von Spannungsquellen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --text-color: #2c3e50;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: var(--card-bg);
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            border-bottom: 2px dashed #bdc3c7;
+            padding-bottom: 20px;
+        }
+        h2 {
+            color: var(--text-color);
+            font-weight: 700;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+        }
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 24px;
+            background-color: var(--secondary-color);
+            margin-right: 12px;
+            border-radius: 4px;
+        }
+        .input-group {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid #d1e8f0;
+        }
+        label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        .media-container {
+            text-align: center;
+            margin: 30px 0;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px dashed #bdc3c7;
+        }
+        .media-container img, .media-container iframe {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .media-caption {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        ul, ol {
+            background: #fdfefe;
+            padding: 20px 20px 20px 40px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 700;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .question-block {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border: 2px solid #f1f3f5;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .question-block:hover {
+            border-color: #dbe4eb;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        .question-block p {
+            margin-top: 0;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .radio-label {
+            display: inline-block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        /* Drag and Drop Styles */
+        .word-bank {
+            background: #e8f4f8;
+            border: 2px dashed var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .word-bank-title {
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .draggable-word {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: grab;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .draggable-word:active {
+            cursor: grabbing;
+        }
+        .cloze-input {
+            width: 150px !important;
+            display: inline-block;
+            border: none !important;
+            border-bottom: 2px dashed var(--primary-color) !important;
+            border-radius: 0 !important;
+            background: transparent;
+            text-align: center;
+            padding: 2px 5px !important;
+            font-weight: 700;
+            color: var(--primary-color);
+            transition: background-color 0.2s;
+        }
+        .cloze-input:focus {
+            border-bottom: 2px solid var(--primary-color) !important;
+        }
+        .cloze-input.drag-over {
+            background-color: #d1e8f0;
+            border-bottom: 3px solid var(--primary-color) !important;
+        }
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+        button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        .print-btn {
+            background-color: #ecf0f1;
+            color: var(--text-color);
+        }
+        .print-btn:hover {
+            background-color: #bdc3c7;
+        }
+        .send-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        .send-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+        #status-message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 700;
+        }
+        @media print {
+            .button-group, #status-message, .word-bank { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .input-group, ul, ol, .question-block, .media-container { border: 1px solid #ccc; background: white; }
+            .media-container img, .media-container iframe { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Forscher-Arbeitsblatt</h1>
+    <div class="subtitle">Reihenschaltung von Spannungsquellen</div>
+    
+    <div class="input-group">
+        <label for="student-name">Dein Name:</label>
+        <input type="text" id="student-name" placeholder="Vor- und Nachname eintragen">
+    </div>
+
+    <h2>Vorbereitung: Erklärvideo ansehen</h2>
+    
+    <div class="media-container">
+        <iframe width="100%" height="400" src="https://www.youtube-nocookie.com/embed/aDwuzQrk-q0?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <span class="media-caption">Spannungsquellen in Reihe schalten.</span>
+    </div>
+
+    <h3>Fragen zum Video</h3>
+    
+    <div class="question-block">
+        <p>1. Was passiert mit der Spannung, wenn mehrere Spannungsquellen in Reihe geschaltet werden?</p>
+        <input type="radio" name="vq1" id="vq1a"> <label class="radio-label" for="vq1a">A) Die Spannung bleibt gleich</label><br>
+        <input type="radio" name="vq1" id="vq1b"> <label class="radio-label" for="vq1b">B) Die Spannung wird kleiner</label><br>
+        <input type="radio" name="vq1" id="vq1c"> <label class="radio-label" for="vq1c">C) Die Spannungen addieren sich</label><br>
+        <input type="radio" name="vq1" id="vq1d"> <label class="radio-label" for="vq1d">D) Die Spannung wird zu Strom</label>
+    </div>
+
+    <div class="question-block">
+        <p>2. Wie groß ist die Gesamtspannung bei drei Spannungsquellen mit jeweils 12 Volt?</p>
+        <input type="radio" name="vq2" id="vq2a"> <label class="radio-label" for="vq2a">A) 12 Volt</label><br>
+        <input type="radio" name="vq2" id="vq2b"> <label class="radio-label" for="vq2b">B) 24 Volt</label><br>
+        <input type="radio" name="vq2" id="vq2c"> <label class="radio-label" for="vq2c">C) 30 Volt</label><br>
+        <input type="radio" name="vq2" id="vq2d"> <label class="radio-label" for="vq2d">D) 36 Volt</label>
+    </div>
+
+    <div class="question-block">
+        <p>3. Wie groß ist die Stromstärke in einer Reihenschaltung laut Video?</p>
+        <input type="radio" name="vq3" id="vq3a"> <label class="radio-label" for="vq3a">A) Überall unterschiedlich</label><br>
+        <input type="radio" name="vq3" id="vq3b"> <label class="radio-label" for="vq3b">B) Überall gleich groß</label><br>
+        <input type="radio" name="vq3" id="vq3c"> <label class="radio-label" for="vq3c">C) Immer 0 Ampere</label><br>
+        <input type="radio" name="vq3" id="vq3d"> <label class="radio-label" for="vq3d">D) Sie verdoppelt sich</label>
+    </div>
+
+    <div class="question-block">
+        <p>4. Warum ist der Strom überall gleich groß?</p>
+        <input type="radio" name="vq4" id="vq4a"> <label class="radio-label" for="vq4a">A) Weil es nur eine Leitung gibt</label><br>
+        <input type="radio" name="vq4" id="vq4b"> <label class="radio-label" for="vq4b">B) Weil die Spannung fehlt</label><br>
+        <input type="radio" name="vq4" id="vq4c"> <label class="radio-label" for="vq4c">C) Weil Batterien keinen Strom liefern</label><br>
+        <input type="radio" name="vq4" id="vq4d"> <label class="radio-label" for="vq4d">D) Weil der Verbraucher den Strom stoppt</label>
+    </div>
+
+    <div class="question-block">
+        <p>5. Welche Bauteile werden im Video als mögliche Spannungsquellen genannt?</p>
+        <input type="radio" name="vq5" id="vq5a"> <label class="radio-label" for="vq5a">A) Motoren</label><br>
+        <input type="radio" name="vq5" id="vq5b"> <label class="radio-label" for="vq5b">B) Lampen</label><br>
+        <input type="radio" name="vq5" id="vq5c"> <label class="radio-label" for="vq5c">C) Batterien</label><br>
+        <input type="radio" name="vq5" id="vq5d"> <label class="radio-label" for="vq5d">D) Widerstände</label>
+    </div>
+
+    <h2>Materialliste für den Versuch</h2>
+    <ul>
+        <li>1x Steckplatte</li>
+        <li>1x Verbindungsleitung rot</li>
+        <li>1x Verbindungsleitung blau</li>
+        <li>3x STB Anschluss</li>
+        <li>1x STB Leitung, T-förmig</li>
+        <li>2x STB Leitung, winkelig</li>
+        <li>2x STB Batterie, 1,2 V</li>
+        <li>1x Spannungsmessgerät (Voltmeter)</li>
+    </ul>
+
+    <h2>Aufbau und Arbeitsanweisung</h2>
+    
+    <div class="media-container">
+        <img src="schaltplan_reihenschaltung.jpg" alt="Schaltplan Aufbau">
+        <span class="media-caption">So soll deine Schaltung auf der Steckplatte aussehen.</span>
+    </div>
+
+    <ol>
+        <li><strong>Versuch 1:</strong> Baue die Schaltung genau wie auf dem Bauplan auf. Schließe das Voltmeter an, um zuerst die Spannungen an den <strong>einzelnen</strong> Batterien zu messen.</li>
+        <li>Miss danach die <strong>Gesamtspannung</strong> über beide Batterien. Trage die Werte unten ein.</li>
+        <li><strong>Versuch 2:</strong> Drehe nun die untere Batterie um 180 Grad (sodass die Minuspole verbunden sind) und stecke sie wieder ein. Miss erneut die Gesamtspannung an den beiden Pluspolen.</li>
+    </ol>
+
+    <h2>Deine Messergebnisse</h2>
+    <table>
+        <tr>
+            <th>Messpunkt</th>
+            <th>Gemessene Spannung (V)</th>
+        </tr>
+        <tr>
+            <td>Spannung obere Batterie (Versuch 1)</td>
+            <td>U1 = <input type="number" step="0.01" style="width: 100px;"> V</td>
+        </tr>
+        <tr>
+            <td>Spannung untere Batterie (Versuch 1)</td>
+            <td>U2 = <input type="number" step="0.01" style="width: 100px;"> V</td>
+        </tr>
+        <tr>
+            <td>Gesamtspannung (Versuch 1)</td>
+            <td>U = <input type="number" step="0.01" style="width: 100px;"> V</td>
+        </tr>
+        <tr>
+            <td>Gesamtspannung gegeneinander (Versuch 2)</td>
+            <td>U = <input type="number" step="0.01" style="width: 100px;"> V</td>
+        </tr>
+    </table>
+
+    <h2>Was hast du herausgefunden?</h2>
+    
+    <div class="question-block">
+        <p>1. Was stellst du bei Versuch 1 fest?</p>
+        <input type="radio" name="q1" id="q1a"> <label class="radio-label" for="q1a">Die Gesamtspannung ist die Summe der Einzelspannungen.</label><br>
+        <input type="radio" name="q1" id="q1b"> <label class="radio-label" for="q1b">Die Gesamtspannung ist gleich der Einzelspannung.</label><br>
+        <input type="radio" name="q1" id="q1c"> <label class="radio-label" for="q1c">Die Gesamtspannung ist Null.</label>
+    </div>
+
+    <div class="question-block">
+        <p>2. Was passiert bei Versuch 2 (Batterie um 180 Grad gedreht)?</p>
+        <input type="radio" name="q2" id="q2a"> <label class="radio-label" for="q2a">Die Spannung verdoppelt sich.</label><br>
+        <input type="radio" name="q2" id="q2b"> <label class="radio-label" for="q2b">Die Gesamtspannung ist Null.</label><br>
+        <input type="radio" name="q2" id="q2c"> <label class="radio-label" for="q2c">Die Spannung bleibt gleich.</label>
+    </div>
+
+    <h2>Lückentext: Unsere Erkenntnis</h2>
+    
+    <div class="word-bank">
+        <p class="word-bank-title">Ziehe die passenden Wörter in die Lücken (oder tippe sie ein):</p>
+        <span class="draggable-word" draggable="true" ondragstart="drag(event)">Null</span>
+        <span class="draggable-word" draggable="true" ondragstart="drag(event)">Reihe</span>
+        <span class="draggable-word" draggable="true" ondragstart="drag(event)">gegeneinander</span>
+        <span class="draggable-word" draggable="true" ondragstart="drag(event)">Summe</span>
+    </div>
+
+    <p style="line-height: 2.4;">
+        Spannungsquellen kann man hintereinander (in 
+        <input type="text" class="cloze-input" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">) schalten, indem man den Minuspol der einen mit dem Pluspol der anderen verbindet. Die Gesamtspannung ist dann so groß wie die 
+        <input type="text" class="cloze-input" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"> der Spannungen an den beiden Batterien. Wenn zwei gleichartige Spannungsquellen 
+        <input type="text" class="cloze-input" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"> geschaltet werden, ist die Gesamtspannung 
+        <input type="text" class="cloze-input" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">.
+    </p>
+
+    <div class="button-group">
+        <button class="print-btn" onclick="window.print()">Arbeitsblatt Drucken / als PDF speichern</button>
+        <button class="send-btn" onclick="sendeDaten()">Ergebnisse an Lehrkraft senden</button>
+    </div>
+    
+    <p id="status-message" style="display: none;"></p>
+
+</div>
+
+<script>
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.innerText);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        ev.target.classList.add('drag-over');
+    }
+
+    function dragLeave(ev) {
+        ev.target.classList.remove('drag-over');
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        ev.target.classList.remove('drag-over');
+        var data = ev.dataTransfer.getData("text");
+        ev.target.value = data;
+    }
+
+    function sendeDaten() {
+        // HIER DIE NEUE GOOGLE APPS SCRIPT URL EINTRAGEN:
+        const webAppUrl = "DEINE_NEUE_WEB_APP_URL_HIER_EINTRAGEN"; 
+
+        function getRadioValue(idA, idB, idC, idD, valA, valB, valC, valD) {
+            if (document.getElementById(idA) && document.getElementById(idA).checked) return valA;
+            if (document.getElementById(idB) && document.getElementById(idB).checked) return valB;
+            if (document.getElementById(idC) && document.getElementById(idC).checked) return valC;
+            if (idD && document.getElementById(idD) && document.getElementById(idD).checked) return valD;
+            return "";
+        }
+
+        const data = {
+            Name_der_Schueler: document.getElementById('student-name').value,
+            
+            Video_Frage_1: getRadioValue('vq1a', 'vq1b', 'vq1c', 'vq1d', 'A', 'B', 'C', 'D'),
+            Video_Frage_2: getRadioValue('vq2a', 'vq2b', 'vq2c', 'vq2d', 'A', 'B', 'C', 'D'),
+            Video_Frage_3: getRadioValue('vq3a', 'vq3b', 'vq3c', 'vq3d', 'A', 'B', 'C', 'D'),
+            Video_Frage_4: getRadioValue('vq4a', 'vq4b', 'vq4c', 'vq4d', 'A', 'B', 'C', 'D'),
+            Video_Frage_5: getRadioValue('vq5a', 'vq5b', 'vq5c', 'vq5d', 'A', 'B', 'C', 'D'),
+
+            Messwert_U1_V: document.querySelectorAll('input[type="number"]')[0].value,
+            Messwert_U2_V: document.querySelectorAll('input[type="number"]')[1].value,
+            Messwert_Uges_V: document.querySelectorAll('input[type="number"]')[2].value,
+            Messwert_Ugegen_V: document.querySelectorAll('input[type="number"]')[3].value,
+            
+            Antwort_Frage_1: getRadioValue('q1a', 'q1b', 'q1c', null, 'Summe', 'Gleich', 'Null', null),
+            Antwort_Frage_2: getRadioValue('q2a', 'q2b', 'q2c', null, 'Verdoppelt', 'Null', 'Gleich', null),
+            
+            Lueckentext_1: document.querySelectorAll('.cloze-input')[0].value,
+            Lueckentext_2: document.querySelectorAll('.cloze-input')[1].value,
+            Lueckentext_3: document.querySelectorAll('.cloze-input')[2].value,
+            Lueckentext_4: document.querySelectorAll('.cloze-input')[3].value
+        };
+
+        const statusMessage = document.getElementById('status-message');
+        statusMessage.style.display = "none";
+        statusMessage.style.backgroundColor = "#e8f8f5";
+        statusMessage.style.color = "#2980b9";
+        statusMessage.innerText = "Sende Daten...";
+        statusMessage.style.display = "block";
+
+        fetch(webAppUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(() => {
+            statusMessage.style.backgroundColor = "#e8f8f5";
+            statusMessage.style.color = "#27ae60";
+            statusMessage.innerText = "Daten erfolgreich gesendet!";
+            alert("Deine Ergebnisse wurden erfolgreich an die Lehrkraft gesendet!");
+        }).catch(error => {
+            statusMessage.style.backgroundColor = "#fdedec";
+            statusMessage.style.color = "#c0392b";
+            statusMessage.innerText = "Fehler beim Senden.";
+            alert("Fehler beim Senden: " + error);
+        });
+    }
+</script>
+
+</body>
+</html>

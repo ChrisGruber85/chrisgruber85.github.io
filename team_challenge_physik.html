@@ -327,69 +327,59 @@
 
     <script>
         // --- BACKEND: AUFGABENPOOL PHYSIK ---
+        // Die Antworten wurden gut durchgemischt (A, B, C und D als richtige Lösung rotieren)
         const questionPool = [
             { q: "Welche Energie steckt in Bewegung?", options: ["A) Wärmeenergie", "B) Bewegungsenergie", "C) Lichtenergie", "D) Kernenergie"], correct: 1 },
-            { q: "Welche Energie kommt von der Sonne?", options: ["A) Sonnenenergie", "B) Bewegungsenergie", "C) Lageenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Essen?", options: ["A) Chemische Energie", "B) Kernenergie", "C) Lichtenergie", "D) Schallenergie"], correct: 0 },
+            { q: "Welche Energie kommt von der Sonne?", options: ["A) Bewegungsenergie", "B) Lageenergie", "C) Sonnenenergie", "D) Schallenergie"], correct: 2 },
+            { q: "Welche Energie steckt im Essen?", options: ["A) Kernenergie", "B) Lichtenergie", "C) Schallenergie", "D) Chemische Energie"], correct: 3 },
             { q: "Welche Energie erzeugt Wärme?", options: ["A) Wärmeenergie", "B) Bewegungsenergie", "C) Lageenergie", "D) Sonnenenergie"], correct: 0 },
-            { q: "Welche Energie hört man?", options: ["A) Schallenergie", "B) Kernenergie", "C) Lichtenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie steckt in Batterien?", options: ["A) Chemische Energie", "B) Lichtenergie", "C) Lageenergie", "D) Bewegungsenergie"], correct: 0 },
-            { q: "Welche Energie erzeugt Licht?", options: ["A) Lichtenergie", "B) Lageenergie", "C) Kernenergie", "D) Schallenergie"], correct: 0 },
+            { q: "Welche Energie hört man?", options: ["A) Kernenergie", "B) Schallenergie", "C) Lichtenergie", "D) Wärmeenergie"], correct: 1 },
+            { q: "Welche Energie steckt in Batterien?", options: ["A) Lichtenergie", "B) Lageenergie", "C) Chemische Energie", "D) Bewegungsenergie"], correct: 2 },
+            { q: "Welche Energie erzeugt Licht?", options: ["A) Lageenergie", "B) Kernenergie", "C) Schallenergie", "D) Lichtenergie"], correct: 3 },
             { q: "Welche Energie steckt in Strom?", options: ["A) Elektrische Energie", "B) Wärmeenergie", "C) Bewegungsenergie", "D) Sonnenenergie"], correct: 0 },
-            { q: "Welche Energie hat ein fahrendes Auto?", options: ["A) Bewegungsenergie", "B) Lichtenergie", "C) Lageenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Wind?", options: ["A) Bewegungsenergie", "B) Kernenergie", "C) Wärmeenergie", "D) Lageenergie"], correct: 0 },
-            { q: "Welche Energie hat Wasser im Stausee?", options: ["A) Lageenergie", "B) Lichtenergie", "C) Schallenergie", "D) Wärmeenergie"], correct: 0 },
+            { q: "Welche Energie hat ein fahrendes Auto?", options: ["A) Lichtenergie", "B) Bewegungsenergie", "C) Lageenergie", "D) Schallenergie"], correct: 1 },
+            { q: "Welche Energie steckt im Wind?", options: ["A) Kernenergie", "B) Wärmeenergie", "C) Bewegungsenergie", "D) Lageenergie"], correct: 2 },
+            { q: "Welche Energie hat Wasser im Stausee?", options: ["A) Lichtenergie", "B) Schallenergie", "C) Wärmeenergie", "D) Lageenergie"], correct: 3 },
             { q: "Welche Energie entsteht beim Feuer?", options: ["A) Wärmeenergie", "B) Lageenergie", "C) Kernenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Radio?", options: ["A) Elektrische Energie", "B) Lageenergie", "C) Sonnenenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie steckt in Kohle?", options: ["A) Chemische Energie", "B) Lichtenergie", "C) Bewegungsenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie hat ein gespannter Bogen?", options: ["A) Spannenergie", "B) Lichtenergie", "C) Wärmeenergie", "D) Kernenergie"], correct: 0 },
+            { q: "Welche Energie nutzt ein Radio?", options: ["A) Lageenergie", "B) Elektrische Energie", "C) Sonnenenergie", "D) Wärmeenergie"], correct: 1 },
+            { q: "Welche Energie steckt in Kohle?", options: ["A) Lichtenergie", "B) Bewegungsenergie", "C) Chemische Energie", "D) Schallenergie"], correct: 2 },
+            { q: "Welche Energie hat ein gespannter Bogen?", options: ["A) Lichtenergie", "B) Wärmeenergie", "C) Kernenergie", "D) Spannenergie"], correct: 3 },
             { q: "Welche Energie erzeugt eine Lampe?", options: ["A) Lichtenergie", "B) Lageenergie", "C) Spannenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie steckt in Uran?", options: ["A) Kernenergie", "B) Bewegungsenergie", "C) Lichtenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie hat ein rollender Ball?", options: ["A) Bewegungsenergie", "B) Lageenergie", "C) Sonnenenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Toaster?", options: ["A) Elektrische Energie", "B) Schallenergie", "C) Lageenergie", "D) Kernenergie"], correct: 0 },
+            { q: "Welche Energie steckt in Uran?", options: ["A) Bewegungsenergie", "B) Kernenergie", "C) Lichtenergie", "D) Schallenergie"], correct: 1 },
+            { q: "Welche Energie hat ein rollender Ball?", options: ["A) Lageenergie", "B) Sonnenenergie", "C) Bewegungsenergie", "D) Wärmeenergie"], correct: 2 },
+            { q: "Welche Energie nutzt ein Toaster?", options: ["A) Schallenergie", "B) Lageenergie", "C) Kernenergie", "D) Elektrische Energie"], correct: 3 },
             { q: "Welche Energie hat ein Wasserfall?", options: ["A) Bewegungsenergie", "B) Lichtenergie", "C) Spannenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie entsteht beim Klatschen?", options: ["A) Schallenergie", "B) Lageenergie", "C) Lichtenergie", "D) Sonnenenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Holz?", options: ["A) Chemische Energie", "B) Wärmeenergie", "C) Lichtenergie", "D) Lageenergie"], correct: 0 },
-            { q: "Welche Energie hat eine gespannte Feder?", options: ["A) Spannenergie", "B) Sonnenenergie", "C) Schallenergie", "D) Lichtenergie"], correct: 0 },
+            { q: "Welche Energie entsteht beim Klatschen?", options: ["A) Lageenergie", "B) Schallenergie", "C) Lichtenergie", "D) Sonnenenergie"], correct: 1 },
+            { q: "Welche Energie steckt im Holz?", options: ["A) Wärmeenergie", "B) Lichtenergie", "C) Chemische Energie", "D) Lageenergie"], correct: 2 },
+            { q: "Welche Energie hat eine gespannte Feder?", options: ["A) Sonnenenergie", "B) Schallenergie", "C) Lichtenergie", "D) Spannenergie"], correct: 3 },
             { q: "Welche Energie liefert die Sonne?", options: ["A) Sonnenenergie", "B) Kernenergie", "C) Lageenergie", "D) Spannenergie"], correct: 0 },
-            { q: "Welche Energie braucht ein Handy?", options: ["A) Elektrische Energie", "B) Lageenergie", "C) Schallenergie", "D) Bewegungsenergie"], correct: 0 },
-            { q: "Welche Energie hat ein hochgehobener Stein?", options: ["A) Lageenergie", "B) Lichtenergie", "C) Wärmeenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie erzeugt ein Lautsprecher?", options: ["A) Schallenergie", "B) Sonnenenergie", "C) Spannenergie", "D) Wärmeenergie"], correct: 0 },
+            { q: "Welche Energie braucht ein Handy?", options: ["A) Lageenergie", "B) Elektrische Energie", "C) Schallenergie", "D) Bewegungsenergie"], correct: 1 },
+            { q: "Welche Energie hat ein hochgehobener Stein?", options: ["A) Lichtenergie", "B) Wärmeenergie", "C) Lageenergie", "D) Kernenergie"], correct: 2 },
+            { q: "Welche Energie erzeugt ein Lautsprecher?", options: ["A) Sonnenenergie", "B) Spannenergie", "C) Wärmeenergie", "D) Schallenergie"], correct: 3 },
             { q: "Welche Energie steckt in Benzin?", options: ["A) Chemische Energie", "B) Lichtenergie", "C) Lageenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Ventilator?", options: ["A) Elektrische Energie", "B) Sonnenenergie", "C) Schallenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie hat ein springender Ball?", options: ["A) Bewegungsenergie", "B) Kernenergie", "C) Lichtenergie", "D) Lageenergie"], correct: 0 },
-            { q: "Welche Energie erzeugt eine Kerze?", options: ["A) Lichtenergie", "B) Spannenergie", "C) Lageenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Atomkern?", options: ["A) Kernenergie", "B) Bewegungsenergie", "C) Sonnenenergie", "D) Wärmeenergie"], correct: 1 }, // fixing duplicate to avoid confusion, Uran and Atomkern both point to Kernenergie
-            { q: "Welche Energie nutzt ein Fernseher?", options: ["A) Elektrische Energie", "B) Spannenergie", "C) Lageenergie", "D) Schallenergie"], correct: 0 },
-            { q: "Welche Energie hat heißes Wasser?", options: ["A) Wärmeenergie", "B) Kernenergie", "C) Lichtenergie", "D) Bewegungsenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Erdgas?", options: ["A) Chemische Energie", "B) Lichtenergie", "C) Schallenergie", "D) Lageenergie"], correct: 0 },
+            { q: "Welche Energie nutzt ein Ventilator?", options: ["A) Sonnenenergie", "B) Elektrische Energie", "C) Schallenergie", "D) Wärmeenergie"], correct: 1 },
+            { q: "Welche Energie hat ein springender Ball?", options: ["A) Kernenergie", "B) Lichtenergie", "C) Bewegungsenergie", "D) Lageenergie"], correct: 2 },
+            { q: "Welche Energie erzeugt eine Kerze?", options: ["A) Spannenergie", "B) Lageenergie", "C) Kernenergie", "D) Lichtenergie"], correct: 3 },
+            { q: "Welche Energie steckt im Atomkern?", options: ["A) Kernenergie", "B) Bewegungsenergie", "C) Sonnenenergie", "D) Wärmeenergie"], correct: 0 },
+            { q: "Welche Energie nutzt ein Fernseher?", options: ["A) Spannenergie", "B) Elektrische Energie", "C) Lageenergie", "D) Schallenergie"], correct: 1 },
+            { q: "Welche Energie hat heißes Wasser?", options: ["A) Kernenergie", "B) Lichtenergie", "C) Wärmeenergie", "D) Bewegungsenergie"], correct: 2 },
+            { q: "Welche Energie steckt im Erdgas?", options: ["A) Lichtenergie", "B) Schallenergie", "C) Lageenergie", "D) Chemische Energie"], correct: 3 },
             { q: "Welche Energie hat eine fahrende Bahn?", options: ["A) Bewegungsenergie", "B) Spannenergie", "C) Sonnenenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie nutzt eine Taschenlampe?", options: ["A) Elektrische Energie", "B) Lageenergie", "C) Schallenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie hat ein gespanntes Gummiband?", options: ["A) Spannenergie", "B) Kernenergie", "C) Lichtenergie", "D) Bewegungsenergie"], correct: 0 },
-            { q: "Welche Energie entsteht beim Reiben?", options: ["A) Wärmeenergie", "B) Lichtenergie", "C) Lageenergie", "D) Kernenergie"], correct: 0 },
+            { q: "Welche Energie nutzt eine Taschenlampe?", options: ["A) Lageenergie", "B) Elektrische Energie", "C) Schallenergie", "D) Wärmeenergie"], correct: 1 },
+            { q: "Welche Energie hat ein gespanntes Gummiband?", options: ["A) Kernenergie", "B) Lichtenergie", "C) Spannenergie", "D) Bewegungsenergie"], correct: 2 },
+            { q: "Welche Energie entsteht beim Reiben?", options: ["A) Lichtenergie", "B) Lageenergie", "C) Kernenergie", "D) Wärmeenergie"], correct: 3 },
             { q: "Welche Energie steckt in Nahrung?", options: ["A) Chemische Energie", "B) Sonnenenergie", "C) Schallenergie", "D) Spannenergie"], correct: 0 },
-            { q: "Welche Energie hat ein Flugzeug im Flug?", options: ["A) Bewegungsenergie", "B) Lageenergie", "C) Lichtenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Computer?", options: ["A) Elektrische Energie", "B) Spannenergie", "C) Schallenergie", "D) Lageenergie"], correct: 0 },
-            { q: "Welche Energie erzeugt die Sonne tagsüber?", options: ["A) Lichtenergie", "B) Kernenergie", "C) Lageenergie", "D) Spannenergie"], correct: 0 },
+            { q: "Welche Energie hat ein Flugzeug im Flug?", options: ["A) Lageenergie", "B) Bewegungsenergie", "C) Lichtenergie", "D) Wärmeenergie"], correct: 1 },
+            { q: "Welche Energie nutzt ein Computer?", options: ["A) Spannenergie", "B) Schallenergie", "C) Elektrische Energie", "D) Lageenergie"], correct: 2 },
+            { q: "Welche Energie erzeugt die Sonne tagsüber?", options: ["A) Kernenergie", "B) Lageenergie", "C) Spannenergie", "D) Lichtenergie"], correct: 3 },
             { q: "Welche Energie hat ein fallender Apfel?", options: ["A) Bewegungsenergie", "B) Lichtenergie", "C) Schallenergie", "D) Wärmeenergie"], correct: 0 },
-            { q: "Welche Energie steckt im Akku?", options: ["A) Chemische Energie", "B) Sonnenenergie", "C) Lageenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Heizkörper?", options: ["A) Wärmeenergie", "B) Lichtenergie", "C) Bewegungsenergie", "D) Spannenergie"], correct: 0 },
-            { q: "Welche Energie hat ein hoher Turm?", options: ["A) Lageenergie", "B) Schallenergie", "C) Lichtenergie", "D) Wärmeenergie"], correct: 0 },
+            { q: "Welche Energie steckt im Akku?", options: ["A) Sonnenenergie", "B) Chemische Energie", "C) Lageenergie", "D) Kernenergie"], correct: 1 },
+            { q: "Welche Energie nutzt ein Heizkörper?", options: ["A) Lichtenergie", "B) Bewegungsenergie", "C) Wärmeenergie", "D) Spannenergie"], correct: 2 },
+            { q: "Welche Energie hat ein hoher Turm?", options: ["A) Schallenergie", "B) Lichtenergie", "C) Wärmeenergie", "D) Lageenergie"], correct: 3 },
             { q: "Welche Energie erzeugt Musik?", options: ["A) Schallenergie", "B) Lageenergie", "C) Spannenergie", "D) Kernenergie"], correct: 0 },
-            { q: "Welche Energie nutzt ein Kühlschrank?", options: ["A) Elektrische Energie", "B) Sonnenenergie", "C) Lageenergie", "D) Bewegungsenergie"], correct: 0 },
-            { q: "Welche Energie hat eine gespannte Schleuder?", options: ["A) Spannenergie", "B) Lichtenergie", "C) Wärmeenergie", "D) Schallenergie"], correct: 0 }
+            { q: "Welche Energie nutzt ein Kühlschrank?", options: ["A) Sonnenenergie", "B) Elektrische Energie", "C) Lageenergie", "D) Bewegungsenergie"], correct: 1 },
+            { q: "Welche Energie hat eine gespannte Schleuder?", options: ["A) Lichtenergie", "B) Wärmeenergie", "C) Spannenergie", "D) Schallenergie"], correct: 2 }
         ];
-
-        // Adjust a small typo from prompt copy-paste interpretation (correct check index verification)
-        questionPool.forEach(q => {
-            q.options.forEach((opt, idx) => {
-                if (opt.includes("✅") || q.correct === idx) {
-                    q.correct = idx;
-                }
-                // Clean checkmarks from presentation string
-                q.options[idx] = opt.replace(" ✅", "");
-            });
-        });
 
         // --- SPIELLOGIK ---
         let remainingQuestions = [...questionPool];
@@ -494,6 +484,7 @@
             });
         }
 
+        // Starte UI init
         updateUI();
 
     </script>

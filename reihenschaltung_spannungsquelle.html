@@ -336,9 +336,15 @@
 
     <h2>Aufbau und Arbeitsanweisung</h2>
     
-    <div class="media-container">
-        <img src="schaltplan_reihenschaltung.jpg" alt="Schaltplan Aufbau">
-        <span class="media-caption">So soll deine Schaltung auf der Steckplatte aussehen.</span>
+    <div class="media-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        <div style="flex: 1; min-width: 280px;">
+            <img src="Parallelschaltung_1.jpg" alt="Parallelschaltung 1" style="width: 100%; height: auto;">
+            <span class="media-caption">Schaltplan Parallelschaltung 1</span>
+        </div>
+        <div style="flex: 1; min-width: 280px;">
+            <img src="Parallelschaltung_2.jpg" alt="Parallelschaltung 2" style="width: 100%; height: auto;">
+            <span class="media-caption">Schaltplan Parallelschaltung 2</span>
+        </div>
     </div>
 
     <ol>
@@ -436,13 +442,12 @@
     }
 
     function sendeDaten() {
-        // HIER DIE NEUE GOOGLE APPS SCRIPT URL EINTRAGEN:
         const webAppUrl = "https://script.google.com/macros/s/AKfycbxO0f-HWJE-Rjx6ZEaIJn_LDco6h1T0sSjlSvnUYFgL2CE-F-KDgh2WI2YsznFc7lmq/exec"; 
 
         function getRadioValue(idA, idB, idC, idD, valA, valB, valC, valD) {
             if (document.getElementById(idA) && document.getElementById(idA).checked) return valA;
             if (document.getElementById(idB) && document.getElementById(idB).checked) return valB;
-            if (document.getElementById(idC) && document.getElementById(idC).checked) return valC;
+            if (document.getElementById(idC) && document.getElementById(idC).checked) return varC;
             if (idD && document.getElementById(idD) && document.getElementById(idD).checked) return valD;
             return "";
         }

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flächenmaße – Affe klettert zum Baum</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green:  #1D9E75;
+    --green2: #0F6E56;
+    --red:    #E24B4A;
+    --bg:     #f0ede6;
+    --card:   #ffffff;
+    --border: #dedad2;
+    --text:   #1a1a1a;
+    --muted:  #888780;
+  }
+
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+  }
+
+  h1 { font-family:'Nunito',sans-serif; font-size:24px; font-weight:800; margin-bottom:6px; }
+  .subtitle { font-size:13px; color:var(--muted); margin-bottom:16px; }
+
+  #difficulty-badge {
+    display: inline-block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px; font-weight: 700;
+    padding: 3px 14px; border-radius: 99px; margin-bottom: 16px;
+  }
+  .diff-1 { background:#e1f5ee; color:#0F6E56; }
+  .diff-2 { background:#e8f0fb; color:#1a4fa0; }
+  .diff-3 { background:#faeeda; color:#633806; }
+  .diff-4 { background:#fde8cc; color:#7a3500; }
+  .diff-5 { background:#fcebeb; color:#791F1F; }
+
+  #game { display:flex; gap:18px; width:100%; max-width:740px; align-items:flex-start; }
+  #left { flex:1; display:flex; flex-direction:column; gap:14px; min-width:0; }
+  #right { width:220px; flex-shrink:0; }
+
+  #question-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:22px 20px 18px; text-align:center;
+  }
+  #question-label {
+    font-size:11px; font-weight:700; color:var(--muted);
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;
+  }
+  #question {
+    font-family:'Nunito',sans-serif; font-size:24px; font-weight:800;
+    color:var(--text); margin-bottom:18px; line-height:1.4; min-height:36px;
+  }
+
+  /* ── Input area ── */
+  #input-area { display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+  .answer-block { display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center; }
+
+  .ans-input {
+    font-family:'Nunito',sans-serif; font-size:22px; font-weight:700;
+    width:140px; text-align:center;
+    border:2px solid var(--border); border-radius:8px; padding:7px 4px;
+    background:#fafaf8; color:var(--text); outline:none;
+    transition:border-color 0.2s;
+  }
+  .ans-input:focus { border-color:var(--green); }
+  .ans-input.wide  { width:170px; }
+
+  .unit-label { font-family:'Nunito',sans-serif; font-size:15px; font-weight:700; color:var(--muted); }
+
+  #submit-btn {
+    font-family:'Nunito',sans-serif; font-size:15px; font-weight:700;
+    padding:10px 30px; cursor:pointer; background:var(--green);
+    color:#fff; border:none; border-radius:8px;
+    transition:background 0.15s, transform 0.1s;
+  }
+  #submit-btn:hover  { background:var(--green2); }
+  #submit-btn:active { transform:scale(0.97); }
+
+  #feedback { font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; min-height:22px; margin-top:8px; }
+  .fb-ok  { color:var(--green); }
+  .fb-err { color:var(--red); }
+
+  /* ── Stats ── */
+  .stats-row { display:flex; gap:10px; }
+  .stat-card { flex:1; background:#eae8e2; border-radius:8px; padding:10px 8px; text-align:center; }
+  .stat-label { font-size:11px; font-weight:600; color:var(--muted); margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px; }
+  .stat-val   { font-family:'Nunito',sans-serif; font-size:20px; font-weight:800; }
+
+  #banana-bar { background:#eae8e2; border-radius:8px; padding:10px 14px; }
+  .bar-label  { font-size:11px; font-weight:600; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px; }
+  #bananas-row { display:flex; align-items:center; gap:4px; }
+  .banana-icon { font-size:20px; filter:grayscale(1) opacity(0.3); transition:filter 0.4s; }
+  .banana-icon.earned { filter:none; }
+  #progress-bar-wrap { flex:1; background:#c8c5bc; border-radius:99px; height:7px; overflow:hidden; margin-left:6px; }
+  #progress-bar { height:100%; background:var(--green); border-radius:99px; width:0%; transition:width 0.5s; }
+
+  #hint-box {
+    background:#fffbf0; border:1px solid #f0d890;
+    border-radius:8px; padding:10px 14px; font-size:12px; color:#633806; line-height:1.8;
+  }
+  #hint-box strong { font-weight:700; }
+  .hint-table { display:flex; gap:16px; flex-wrap:wrap; margin-top:4px; }
+  .hint-col   { display:flex; flex-direction:column; gap:2px; }
+
+  /* ── End screen ── */
+  #end-screen {
+    display:none; flex-direction:column; align-items:center;
+    gap:16px; padding:40px 20px; text-align:center; width:100%; max-width:500px;
+  }
+  #end-screen .big-emoji { font-size:64px; }
+  #end-screen h2 { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; }
+  #end-screen p  { color:var(--muted); font-size:15px; }
+  #restart-btn {
+    font-family:'Nunito',sans-serif; font-size:15px; font-weight:700;
+    padding:12px 30px; cursor:pointer; background:var(--green);
+    color:#fff; border:none; border-radius:8px;
+  }
+  #restart-btn:hover { background:var(--green2); }
+</style>
+</head>
+<body>
+
+<h1>📐 Flächenmaße-Spiel</h1>
+<p class="subtitle">Hilf dem Affen, alle 5 Bananen zu holen!</p>
+<div id="difficulty-badge" class="diff-1">Runde 1 – Leicht</div>
+
+<div id="game">
+  <div id="left">
+
+    <div id="question-card">
+      <div id="question-label">Wandle um</div>
+      <div id="question">Lädt…</div>
+      <div id="input-area"></div>
+      <button id="submit-btn" onclick="checkAnswer()">Prüfen ✓</button>
+      <div id="feedback"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Richtig</div>
+        <div class="stat-val" id="score-ok"  style="color:var(--green)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Falsch</div>
+        <div class="stat-val" id="score-err" style="color:var(--red)">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Runde</div>
+        <div class="stat-val" id="round-display">1 / 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Stufe</div>
+        <div class="stat-val" id="level-display">🌱</div>
+      </div>
+    </div>
+
+    <div id="banana-bar">
+      <div class="bar-label">Gesammelte Bananen</div>
+      <div id="bananas-row">
+        <span class="banana-icon" id="b0">🍌</span>
+        <span class="banana-icon" id="b1">🍌</span>
+        <span class="banana-icon" id="b2">🍌</span>
+        <span class="banana-icon" id="b3">🍌</span>
+        <span class="banana-icon" id="b4">🍌</span>
+        <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="hint-box">
+      <strong>💡 Merkhilfe – immer ×100 oder ÷100:</strong>
+      <div class="hint-table">
+        <div class="hint-col">
+          <span>1 km² = 100 ha</span>
+          <span>1 ha &nbsp;= 100 a</span>
+          <span>1 a &nbsp;&nbsp;= 100 m²</span>
+        </div>
+        <div class="hint-col">
+          <span>1 m² &nbsp;= 100 dm²</span>
+          <span>1 dm² = 100 cm²</span>
+          <span>1 cm² = 100 mm²</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="right">
+    <svg id="tree-svg" width="220" height="570" viewBox="0 0 220 570"
+         xmlns="http://www.w3.org/2000/svg" aria-label="Baum mit Affe"></svg>
+  </div>
+</div>
+
+<div id="end-screen">
+  <div class="big-emoji">🍌🐒🍌</div>
+  <h2>Der Affe ist satt!</h2>
+  <p id="end-stats"></p>
+  <button id="restart-btn" onclick="initGame()">Nochmal spielen</button>
+</div>
+
+<script>
+/* ============================================================
+   Aufgaben-Format:
+   { text, answers:[zahl,...], units:['ha',...] }
+   Bei mehreren answers → mehrere Eingabefelder
+============================================================ */
+function q(text, answers, units) { return { text, answers, units }; }
+
+/* ── RUNDE 1: Leicht – einfache 1-Schritt-Umwandlungen ── */
+const POOL_R1 = [
+  q('2 km² = ___ ha',    [200],    ['ha']),
+  q('5 km² = ___ ha',    [500],    ['ha']),
+  q('7 km² = ___ ha',    [700],    ['ha']),
+  q('9 km² = ___ ha',    [900],    ['ha']),
+  q('12 km² = ___ ha',   [1200],   ['ha']),
+  q('300 ha = ___ km²',  [3],      ['km²']),
+  q('450 ha = ___ km²',  [4.5],    ['km²']),
+  q('800 ha = ___ km²',  [8],      ['km²']),
+  q('1200 ha = ___ km²', [12],     ['km²']),
+  q('2500 ha = ___ km²', [25],     ['km²']),
+  q('3 ha = ___ a',      [300],    ['a']),
+  q('8 ha = ___ a',      [800],    ['a']),
+  q('15 ha = ___ a',     [1500],   ['a']),
+  q('27 ha = ___ a',     [2700],   ['a']),
+  q('50 ha = ___ a',     [5000],   ['a']),
+  q('400 a = ___ ha',    [4],      ['ha']),
+  q('750 a = ___ ha',    [7.5],    ['ha']),
+  q('1200 a = ___ ha',   [12],     ['ha']),
+  q('3500 a = ___ ha',   [35],     ['ha']),
+  q('6400 a = ___ ha',   [64],     ['ha']),
+  q('2 a = ___ m²',      [200],    ['m²']),
+  q('6 a = ___ m²',      [600],    ['m²']),
+  q('11 a = ___ m²',     [1100],   ['m²']),
+  q('24 a = ___ m²',     [2400],   ['m²']),
+  q('35 a = ___ m²',     [3500],   ['m²']),
+  q('300 m² = ___ a',    [3],      ['a']),
+  q('900 m² = ___ a',    [9],      ['a']),
+  q('1500 m² = ___ a',   [15],     ['a']),
+  q('4200 m² = ___ a',   [42],     ['a']),
+  q('8700 m² = ___ a',   [87],     ['a']),
+  q('4 m² = ___ dm²',    [400],    ['dm²']),
+  q('9 m² = ___ dm²',    [900],    ['dm²']),
+  q('15 m² = ___ dm²',   [1500],   ['dm²']),
+  q('28 m² = ___ dm²',   [2800],   ['dm²']),
+  q('41 m² = ___ dm²',   [4100],   ['dm²']),
+  q('500 dm² = ___ m²',  [5],      ['m²']),
+  q('1200 dm² = ___ m²', [12],     ['m²']),
+  q('4500 dm² = ___ m²', [45],     ['m²']),
+  q('7800 dm² = ___ m²', [78],     ['m²']),
+  q('9900 dm² = ___ m²', [99],     ['m²']),
+  q('5 dm² = ___ cm²',   [500],    ['cm²']),
+  q('7 dm² = ___ cm²',   [700],    ['cm²']),
+  q('14 dm² = ___ cm²',  [1400],   ['cm²']),
+  q('32 dm² = ___ cm²',  [3200],   ['cm²']),
+  q('56 dm² = ___ cm²',  [5600],   ['cm²']),
+  q('300 cm² = ___ dm²', [3],      ['dm²']),
+  q('800 cm² = ___ dm²', [8],      ['dm²']),
+  q('2500 cm² = ___ dm²',[25],     ['dm²']),
+  q('6400 cm² = ___ dm²',[64],     ['dm²']),
+  q('9100 cm² = ___ dm²',[91],     ['dm²']),
+  q('2 cm² = ___ mm²',   [200],    ['mm²']),
+  q('8 cm² = ___ mm²',   [800],    ['mm²']),
+  q('16 cm² = ___ mm²',  [1600],   ['mm²']),
+  q('29 cm² = ___ mm²',  [2900],   ['mm²']),
+  q('43 cm² = ___ mm²',  [4300],   ['mm²']),
+  q('400 mm² = ___ cm²', [4],      ['cm²']),
+  q('900 mm² = ___ cm²', [9],      ['cm²']),
+  q('2200 mm² = ___ cm²',[22],     ['cm²']),
+  q('6700 mm² = ___ cm²',[67],     ['cm²']),
+  q('8400 mm² = ___ cm²',[84],     ['cm²']),
+];
+
+/* ── RUNDE 2: Leicht-Mittel – Kommazahlen (1 Schritt) ── */
+const POOL_R2 = [
+  q('1,5 km² = ___ ha',    [150],     ['ha']),
+  q('2,7 km² = ___ ha',    [270],     ['ha']),
+  q('0,8 km² = ___ ha',    [80],      ['ha']),
+  q('3,25 ha = ___ a',     [325],     ['a']),
+  q('7,5 ha = ___ a',      [750],     ['a']),
+  q('12,4 a = ___ m²',     [1240],    ['m²']),
+  q('8,75 a = ___ m²',     [875],     ['m²']),
+  q('4,3 m² = ___ dm²',    [430],     ['dm²']),
+  q('9,12 m² = ___ dm²',   [912],     ['dm²']),
+  q('6,5 dm² = ___ cm²',   [650],     ['cm²']),
+  q('3,08 dm² = ___ cm²',  [308],     ['cm²']),
+  q('7,4 cm² = ___ mm²',   [740],     ['mm²']),
+  q('0,95 cm² = ___ mm²',  [95],      ['mm²']),
+  q('250,5 ha = ___ km²',  [2.505],   ['km²']),
+  q('1750,8 a = ___ ha',   [17.508],  ['ha']),
+  q('14 km² = ___ ha',     [1400],    ['ha']),
+  q('18,5 km² = ___ ha',   [1850],    ['ha']),
+  q('240 ha = ___ km²',    [2.4],     ['km²']),
+  q('3750 ha = ___ km²',   [37.5],    ['km²']),
+  q('45 ha = ___ a',       [4500],    ['a']),
+  q('6200 a = ___ ha',     [62],      ['ha']),
+  q('7,8 a = ___ m²',      [780],     ['m²']),
+  q('950 m² = ___ a',      [9.5],     ['a']),
+  q('12,6 m² = ___ dm²',   [1260],    ['dm²']),
+  q('8450 dm² = ___ m²',   [84.5],    ['m²']),
+  q('14,25 km² = ___ ha',  [1425],    ['ha']),
+  q('0,89 km² = ___ m²',   [890000],  ['m²']),
+  q('0,567 km² = ___ ha',  [56.7],    ['ha']),
+  q('45,78 ha = ___ a',    [4578],    ['a']),
+  q('678,9 a = ___ m²',    [67890],   ['m²']),
+];
+
+/* ── RUNDE 3: Mittel – 2-Schritt-Umwandlungen ── */
+const POOL_R3 = [
+  q('3 km² = ___ a',           [30000],       ['a']),
+  q('5 km² = ___ m²',          [5000000],     ['m²']),
+  q('8 ha = ___ m²',           [80000],       ['m²']),
+  q('12 ha = ___ dm²',         [120000000],   ['dm²']),  // 12 * 10000 * 100
+  q('6 a = ___ dm²',           [60000],       ['dm²']),
+  q('15 a = ___ cm²',          [15000000],    ['cm²']),
+  q('4 m² = ___ cm²',          [40000],       ['cm²']),
+  q('9 m² = ___ mm²',          [9000000],     ['mm²']),
+  q('7 dm² = ___ mm²',         [700000],      ['mm²']),
+  q('250000 cm² = ___ m²',     [25],          ['m²']),
+  q('480000 dm² = ___ ha',     [0.048],       ['ha']),
+  q('720000 m² = ___ ha',      [72],          ['ha']),
+  q('9500000 cm² = ___ m²',    [950],         ['m²']),
+  q('120000000 mm² = ___ m²',  [120],         ['m²']),
+  q('450000000 dm² = ___ km²', [0.45],        ['km²']),
+  q('0,007 km² = ___ m²',      [7000],        ['m²']),
+  q('0,45 ha = ___ dm²',       [4500000],     ['dm²']),
+  q('7,005 ha = ___ dm²',      [7005000000],  ['dm²']),
+  q('0,045 a = ___ cm²',       [450],         ['cm²']),
+  q('456789 mm² = ___ cm²',    [4567.89],     ['cm²']),
+  q('987654 cm² = ___ dm²',    [9876.54],     ['dm²']),
+  q('123456 dm² = ___ m²',     [1234.56],     ['m²']),
+  q('456789 cm² = ___ m²',     [45.6789],     ['m²']),
+  q('98765 dm² = ___ m²',      [987.65],      ['m²']),
+  q('3456789 m² = ___ km²',    [3.456789],    ['km²']),
+];
+
+/* ── RUNDE 4: Mittel-Schwer – gemischte Angaben & grosse Zahlen ── */
+const POOL_R4 = [
+  q('12,75 km² = ___ m²',      [12750000],    ['m²']),
+  q('8,4 ha = ___ cm²',        [840000000],   ['cm²']),
+  q('15,32 a = ___ mm²',       [153200000000],['mm²']),
+  q('4,75 km² = ___ cm²',      [475000000000],['cm²']),
+  q('2,08 ha = ___ mm²',       [208000000000],['mm²']),
+  q('125000000 mm² = ___ ha',  [0.00125],     ['ha']),
+  q('980000000 cm² = ___ km²', [0.000098],    ['km²']),
+  q('756000000 dm² = ___ ha',  [756],         ['ha']),
+  q('0,0035 km² = ___ m²',     [3500],        ['m²']),
+  q('0,075 ha = ___ cm²',      [75000000],    ['cm²']),
+  q('0,0008 a = ___ mm²',      [80000],       ['mm²']),
+  q('0,25 m² = ___ mm²',       [250000],      ['mm²']),
+  q('12,345 dm² = ___ cm²',    [1234.5],      ['cm²']),
+  q('5678900 mm² = ___ m²',    [5.6789],      ['m²']),
+  q('0,00045 km² = ___ cm²',   [4500000000],  ['cm²']),
+  q('0,89 km² = ___ m²',       [890000],      ['m²']),
+  q('7,005 ha = ___ m²',       [70050],       ['m²']),
+];
+
+/* ── RUNDE 5: Schwer – Kettenumwandlungen & gemischte Einheiten ── */
+const POOL_R5 = [
+  // gemischte Einheiten (2 Felder)
+  q('3 km² 25 ha = ___ ha',    [325],         ['ha']),
+  q('5 ha 40 a = ___ a',       [540],         ['a']),
+  q('8 a 35 m² = ___ m²',      [835],         ['m²']),
+  q('12 m² 45 dm² = ___ dm²',  [1245],        ['dm²']),
+  q('6 dm² 20 cm² = ___ cm²',  [620],         ['cm²']),
+  q('7 cm² 50 mm² = ___ mm²',  [750],         ['mm²']),
+  // Ketten 3 Felder
+  q('3,456 km² = ___ ha\n= ___ a\n= ___ m²',
+    [345.6, 34560, 3456000], ['ha','a','m²']),
+  q('7,89 ha = ___ a\n= ___ m²\n= ___ dm²',
+    [789, 78900, 7890000], ['a','m²','dm²']),
+  q('45,67 a = ___ m²\n= ___ cm²',
+    [4567, 456700000], ['m²','cm²']),
+  q('12,345 m² = ___ dm²\n= ___ cm²\n= ___ mm²',
+    [1234.5, 123450, 12345000], ['dm²','cm²','mm²']),
+  q('987,6 dm² = ___ m²\n= ___ cm²',
+    [9.876, 98760], ['m²','cm²']),
+  q('6543 cm² = ___ dm²\n= ___ mm²',
+    [65.43, 654300], ['dm²','mm²']),
+  q('87654321 mm² = ___ cm²\n= ___ dm²\n= ___ m²',
+    [876543.21, 8765.4321, 87.654321], ['cm²','dm²','m²']),
+  q('0,123 km² = ___ ha\n= ___ m²',
+    [12.3, 123000], ['ha','m²']),
+  q('0,0456 ha = ___ a\n= ___ cm²',
+    [4.56, 456000000], ['a','cm²']),
+  q('0,00078 km² = ___ ha\n= ___ m²\n= ___ cm²',
+    [0.078, 780, 7800000], ['ha','m²','cm²']),
+  q('425 ha = ___ km²\n= Rest ___ ha',
+    [4, 25], ['km²','ha']),
+  q('3675 a = ___ ha\n= Rest ___ a',
+    [36, 75], ['ha','a']),
+  q('5820 m² = ___ a\n= Rest ___ m²',
+    [58, 20], ['a','m²']),
+  q('9345 dm² = ___ m²\n= Rest ___ dm²',
+    [93, 45], ['m²','dm²']),
+];
+
+const ROUND_POOLS = [POOL_R1, POOL_R2, POOL_R3, POOL_R4, POOL_R5];
+const ROUND_NAMES = ['Leicht 🌱','Kommazahlen 🌿','2 Schritte ⭐','Große Zahlen ⭐⭐','Ketten 🔥'];
+const ROUND_DIFF  = ['diff-1','diff-2','diff-3','diff-4','diff-5'];
+const LEVEL_ICONS = ['🌱','🌿','⭐','⭐⭐','🔥'];
+
+const STEPS = 10;
+const branchData = [];
+for (let i = 0; i < STEPS; i++) {
+  branchData.push({ y: 510 - i*46, len: 36 + (i%4)*8, dir: (i%2===0)?1:-1 });
+}
+
+let pos, bananasEarned, round, correctTotal, wrongTotal, animating;
+let usedIndices = [], currentQ = null;
+
+/* ── Tree ── */
+function drawTree() {
+  const svg = document.getElementById('tree-svg');
+  svg.innerHTML = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const sky = document.createElementNS(ns,'rect');
+  sky.setAttribute('x','0'); sky.setAttribute('y','0');
+  sky.setAttribute('width','220'); sky.setAttribute('height','570');
+  sky.setAttribute('rx','12'); sky.setAttribute('fill','#eaf6ff');
+  svg.appendChild(sky);
+
+  const trunk = document.createElementNS(ns,'rect');
+  trunk.setAttribute('x','105'); trunk.setAttribute('y','72');
+  trunk.setAttribute('width','18'); trunk.setAttribute('height','460');
+  trunk.setAttribute('rx','8'); trunk.setAttribute('fill','#A0631A');
+  svg.appendChild(trunk);
+
+  branchData.forEach(b => {
+    const br = document.createElementNS(ns,'line');
+    br.setAttribute('x1','114'); br.setAttribute('y1', b.y);
+    br.setAttribute('x2', 114 + b.dir*b.len); br.setAttribute('y2', b.y - 12);
+    br.setAttribute('stroke','#A0631A'); br.setAttribute('stroke-width','5');
+    br.setAttribute('stroke-linecap','round'); svg.appendChild(br);
+    const lx = 114 + b.dir*b.len, ly = b.y - 18;
+    [0,1].forEach(li => {
+      const lf = document.createElementNS(ns,'ellipse');
+      lf.setAttribute('cx', lx + b.dir*(10+li*8)); lf.setAttribute('cy', ly-li*7);
+      lf.setAttribute('rx', li===0?'16':'10'); lf.setAttribute('ry', li===0?'7':'5');
+      lf.setAttribute('fill', li===0?'#5DCAA5':'#1D9E75'); lf.setAttribute('opacity','0.88');
+      svg.appendChild(lf);
+    });
+  });
+
+  [[-34,6],[-22,-2],[-10,-7],[4,-9],[18,-7],[30,-2],[42,6]].forEach(([ox,oy]) => {
+    const e = document.createElementNS(ns,'ellipse');
+    e.setAttribute('cx', 114+ox); e.setAttribute('cy', 76+oy);
+    e.setAttribute('rx','20'); e.setAttribute('ry','10');
+    e.setAttribute('fill','#5DCAA5'); e.setAttribute('opacity','0.92');
+    svg.appendChild(e);
+  });
+
+  const bn = document.createElementNS(ns,'text');
+  bn.setAttribute('x','114'); bn.setAttribute('y','62');
+  bn.setAttribute('text-anchor','middle'); bn.setAttribute('font-size','22');
+  bn.textContent = '🍌'; svg.appendChild(bn);
+
+  const mk = document.createElementNS(ns,'text');
+  mk.setAttribute('id','monkey'); mk.setAttribute('x','114');
+  mk.setAttribute('text-anchor','middle'); mk.setAttribute('font-size','28');
+  mk.textContent = '🐒'; svg.appendChild(mk);
+  updateMonkeyPos();
+}
+
+function getMonkeyY(p) { return p >= STEPS ? 56 : branchData[p].y + 5; }
+function updateMonkeyPos() {
+  const m = document.getElementById('monkey');
+  if (m) m.setAttribute('y', getMonkeyY(pos));
+}
+
+/* ── Questions ── */
+function pickQuestion(ri) {
+  const pool = ROUND_POOLS[ri];
+  let idx, tries = 0;
+  do { idx = Math.floor(Math.random() * pool.length); tries++; }
+  while (usedIndices.includes(idx + ri*1000) && tries < 80);
+  usedIndices.push(idx + ri*1000);
+  return pool[idx];
+}
+
+function buildInputArea(q) {
+  const area = document.getElementById('input-area');
+  area.innerHTML = '';
+  q.answers.forEach((_, i) => {
+    const block = document.createElement('div');
+    block.className = 'answer-block';
+    const inp = document.createElement('input');
+    inp.type = 'number'; inp.step = 'any';
+    inp.id = 'ans_' + i;
+    inp.className = 'ans-input' + (q.answers.length === 1 ? ' wide' : '');
+    inp.setAttribute('autocomplete','off');
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') checkAnswer(); });
+    block.appendChild(inp);
+    if (q.units && q.units[i]) {
+      const ul = document.createElement('span');
+      ul.className = 'unit-label';
+      ul.textContent = q.units[i];
+      block.appendChild(ul);
+    }
+    area.appendChild(block);
+    if (i === 0) setTimeout(() => inp.focus(), 50);
+  });
+}
+
+function newQuestion() {
+  currentQ = pickQuestion(round - 1);
+  document.getElementById('question').textContent = currentQ.text;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = '';
+  buildInputArea(currentQ);
+}
+
+function numEq(a, b) { return Math.abs(a - b) / (Math.abs(b) + 1e-12) < 0.0001; }
+
+function checkAnswer() {
+  if (animating || !currentQ) return;
+  let allOk = true;
+  for (let i = 0; i < currentQ.answers.length; i++) {
+    const inp = document.getElementById('ans_' + i);
+    if (!inp) { allOk = false; break; }
+    const val = parseFloat(inp.value.replace(',','.'));
+    if (isNaN(val) || !numEq(val, currentQ.answers[i])) { allOk = false; break; }
+  }
+
+  const fb = document.getElementById('feedback');
+  animating = true;
+
+  if (allOk) {
+    correctTotal++;
+    document.getElementById('score-ok').textContent = correctTotal;
+    fb.textContent = '✓ Richtig! Der Affe klettert hoch!';
+    fb.className = 'fb-ok';
+    pos = Math.min(pos + 1, STEPS);
+    updateMonkeyPos();
+    if (pos >= STEPS) { setTimeout(celebrateBanana, 500); return; }
+  } else {
+    wrongTotal++;
+    document.getElementById('score-err').textContent = wrongTotal;
+    const correctStr = currentQ.answers.map((a,i) => {
+      const display = Number.isInteger(a) ? a.toLocaleString('de-DE') : String(a).replace('.',',');
+      return display + ' ' + (currentQ.units[i] || '');
+    }).join(' | ');
+    fb.textContent = '✗ Falsch! Richtig: ' + correctStr + '. Affe fällt runter!';
+    fb.className = 'fb-err';
+    pos = Math.max(pos - 1, 0);
+    updateMonkeyPos();
+  }
+  setTimeout(() => { animating = false; newQuestion(); }, 1300);
+}
+
+function updateBadge() {
+  const b = document.getElementById('difficulty-badge');
+  b.textContent = 'Runde ' + round + ' – ' + ROUND_NAMES[round-1];
+  b.className = ROUND_DIFF[round-1];
+  document.getElementById('level-display').textContent = LEVEL_ICONS[round-1];
+  document.getElementById('round-display').textContent = round + ' / 5';
+}
+
+function celebrateBanana() {
+  bananasEarned++;
+  const bEl = document.getElementById('b'+(bananasEarned-1));
+  if (bEl) bEl.classList.add('earned');
+  document.getElementById('progress-bar').style.width = (bananasEarned*20)+'%';
+  const fb = document.getElementById('feedback');
+  fb.textContent = '🍌 Banane ' + bananasEarned + ' von 5 geholt!';
+  fb.className = 'fb-ok';
+  if (bananasEarned >= 5) { setTimeout(showEnd, 900); return; }
+  round++;
+  updateBadge();
+  pos = 0;
+  updateMonkeyPos();
+  setTimeout(() => { animating = false; newQuestion(); }, 1400);
+}
+
+function showEnd() {
+  document.getElementById('game').style.display = 'none';
+  document.getElementById('difficulty-badge').style.display = 'none';
+  const es = document.getElementById('end-screen');
+  es.style.display = 'flex';
+  es.querySelector('#end-stats').innerHTML =
+    'Du hast <strong>'+correctTotal+'</strong> Aufgaben richtig und <strong>'+wrongTotal+'</strong> falsch beantwortet.';
+}
+
+function initGame() {
+  pos=0; bananasEarned=0; round=1; correctTotal=0; wrongTotal=0; animating=false;
+  usedIndices=[];
+  document.getElementById('score-ok').textContent='0';
+  document.getElementById('score-err').textContent='0';
+  document.getElementById('progress-bar').style.width='0%';
+  for(let i=0;i<5;i++){const b=document.getElementById('b'+i);if(b)b.classList.remove('earned');}
+  document.getElementById('game').style.display='flex';
+  document.getElementById('end-screen').style.display='none';
+  document.getElementById('difficulty-badge').style.display='inline-block';
+  updateBadge();
+  drawTree();
+  newQuestion();
+}
+
+initGame();
+</script>
+</body>
+</html>

@@ -107,6 +107,17 @@
             color: #7f8c8d;
             font-weight: bold;
         }
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .image-gallery .media-container {
+            flex: 1;
+            min-width: 280px;
+            margin: 0; /* Reset margin for flex layout */
+        }
         ul, ol {
             background: #fdfefe;
             padding: 20px 20px 20px 40px;
@@ -259,6 +270,7 @@
             .container { box-shadow: none; padding: 0; max-width: 100%; }
             .input-group, ul, ol, .question-block, .media-container { border: 1px solid #ccc; background: white; }
             .media-container img, .media-container iframe { box-shadow: none; }
+            .image-gallery { gap: 10px; }
         }
     </style>
 </head>
@@ -319,17 +331,23 @@
 
     <h2>Aufbau und Arbeitsanweisung</h2>
     
-    <div class="media-container">
-        <img src="Parallelschaltung_Spannungsquelle.jpg" alt="Aufbau Parallelschaltung">
-        <span class="media-caption">So soll dein Versuchsaufbau auf der Steckplatte aussehen.</span>
+    <div class="image-gallery">
+        <div class="media-container">
+            <img src="Parallelschaltung_Spannungsquelle.jpg" alt="Aufbau Parallelschaltung (Schritt 1)">
+            <span class="media-caption">Messung der ersten Batterie (zweite Batterie fehlt noch).</span>
+        </div>
+        <div class="media-container">
+            <img src="Parallelschaltung_Spannungsquelle_2.jpg" alt="Aufbau Parallelschaltung (Schritt 4)">
+            <span class="media-caption">Beide Batterien parallel geschaltet (Gesamtspannung).</span>
+        </div>
     </div>
 
     <ol>
-        <li><strong>Vorbereitung:</strong> Baue die Schaltung genau gemäß der Abbildung auf. Der <strong>schraffierte Batteriebaustein</strong> (die zweite Batterie) wird zunächst noch <strong>nicht eingesteckt</strong>. Das Messinstrument wird mit dem Messbereich 3 V = verwendet.</li>
+        <li><strong>Vorbereitung:</strong> Baue die Schaltung genau gemäß der ersten Abbildung auf. Der <strong>schraffierte Batteriebaustein</strong> (die zweite Batterie) wird zunächst noch <strong>nicht eingesteckt</strong>. Das Messinstrument wird mit dem Messbereich 3 V = verwendet.</li>
         <li><strong>Schritt 1:</strong> Der Schalter wird geschlossen. Miss die Spannung der linken Batterie.</li>
-        <li><strong>Schritt 2:</strong> Wir öffnen den Schalter wieder (legen den Knebel des Schalters auf „AUS“) und stecken die zweite Batterie gemäß Abbildung ein.</li>
+        <li><strong>Schritt 2:</strong> Wir öffnen den Schalter wieder (legen den Knebel des Schalters auf „AUS“) und stecken die zweite Batterie gemäß der zweiten Abbildung ein.</li>
         <li><strong>Schritt 3:</strong> Wir messen die Spannung der rechten Batterie.</li>
-        <li><strong>Schritt 4:</strong> Der Schalter wird geschlossen, und wir messen die <strong>Gesamtspannung</strong> an beiden Batterien. Trage alle Werte unten ein.</li>
+        <li><strong>Schritt 4:</strong> Der Schalter wird geschlossen, und wir messen die <strong>Gesamtspannung</strong> an beiden parallel geschalteten Batterien (wie im zweiten Bild zu sehen). Trage alle Werte unten ein.</li>
     </ol>
 
     <h2>Deine Messergebnisse</h2>
@@ -423,7 +441,6 @@
     }
 
     function sendeDaten() {
-        // Deine Web App URL hier einfügen
         const webAppUrl = "https://script.google.com/macros/s/AKfycbxO0f-HWJE-Rjx6ZEaIJn_LDco6h1T0sSjlSvnUYFgL2CE-F-KDgh2WI2YsznFc7lmq/exec"; 
 
         function getRadioValue(idA, idB, idC, idD, valA, valB, valC, valD) {

@@ -87,6 +87,25 @@
             font-weight: bold;
             font-size: 1.2em;
         }
+        /* Neue CSS-Klassen für die Fehleranzeige */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+        .feedback-box ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .feedback-box li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
@@ -208,15 +227,12 @@
 </div>
 
 <script>
-    // Eingefügte Google Apps Script Web App URL
     const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-A0qUND3OlV9Z8qsQqJZISapFAlIYoVIVR47U4HcvvlubRT0ZUvOwBQDTXaU21XdBGg/exec";
 
-    // Hilfsfunktion zum Bereinigen von Zahlen (macht Komma zu Punkt für die Prüfung)
     function cleanNumber(str) {
         return str.trim().replace(',', '.').replace('%', '');
     }
 
-    // Hilfsfunktion zum Bereinigen der Rangliste (entfernt Leerzeichen)
     function cleanList(str) {
         return str.replace(/\s+/g, '').replace(/\./g, ',');
     }
@@ -228,35 +244,89 @@
         btn.disabled = true;
         btn.innerText = "Wird gesendet...";
 
-        // Daten auslesen
         const name = document.getElementById('studentName').value;
         const klasse = document.getElementById('studentClass').value;
         
         let punkte = 0;
+        let fehlerListe = ""; // Hier speichern wir die Fehlermeldungen
 
         // Auswertung Aufgabe 1
-        if(document.getElementById('q1a').value.trim() === "31") punkte++;
-        if(cleanNumber(document.getElementById('q1b').value) === "17") punkte++;
+        if(document.getElementById('q1a').value.trim() === "31") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 1a (Ausreißer):</strong> Falsch. Richtig ist <strong>31</strong>.</li>";
+        }
+
+        if(cleanNumber(document.getElementById('q1b').value) === "17") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 1b (Mittelwert):</strong> Falsch. Richtig ist <strong>17</strong>.</li>";
+        }
 
         // Auswertung Aufgabe 2
-        if(cleanList(document.getElementById('q2a').value) === "0,3;0,5;0,5;0,8;1,4") punkte++;
-        if(cleanNumber(document.getElementById('q2b').value) === "0.5") punkte++;
+        if(cleanList(document.getElementById('q2a').value) === "0,3;0,5;0,5;0,8;1,4") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 2a (Rangliste):</strong> Falsch. Richtig ist <strong>0,3; 0,5; 0,5; 0,8; 1,4</strong>.</li>";
+        }
+
+        if(cleanNumber(document.getElementById('q2b').value) === "0.5") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 2b (Zentralwert):</strong> Falsch. Richtig ist <strong>0,5</strong>.</li>";
+        }
 
         // Auswertung Aufgabe 3
-        if(document.getElementById('q3a').value.trim() === "22") punkte++;
-        if(document.getElementById('q3b').value.trim() === "4") punkte++;
+        if(document.getElementById('q3a').value.trim() === "22") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 3a (Modalwert):</strong> Falsch. Richtig ist <strong>22</strong>.</li>";
+        }
+
+        if(document.getElementById('q3b').value.trim() === "4") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 3b (Spannweite):</strong> Falsch. Richtig ist <strong>4</strong> (24 - 20).</li>";
+        }
 
         // Auswertung Aufgabe 4
-        if(document.getElementById('q4a').value.trim() === "5") punkte++;
-        if(cleanNumber(document.getElementById('q4b').value) === "0.2") punkte++;
-        if(cleanNumber(document.getElementById('q4c').value) === "20") punkte++;
+        if(document.getElementById('q4a').value.trim() === "5") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 4a (Absolute Häufigkeit):</strong> Falsch. Richtig ist <strong>5</strong>.</li>";
+        }
+
+        if(cleanNumber(document.getElementById('q4b').value) === "0.2") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 4b (Relative Häufigkeit):</strong> Falsch. Richtig ist <strong>0,2</strong>.</li>";
+        }
+
+        if(cleanNumber(document.getElementById('q4c').value) === "20") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 4c (Prozentuelle Häufigkeit):</strong> Falsch. Richtig ist <strong>20</strong>.</li>";
+        }
 
         // Auswertung Aufgabe 5
-        if(document.getElementById('q5a').value === "A") punkte++;
-        if(document.getElementById('q5b').value === "C") punkte++;
-        if(document.getElementById('q5c').value === "C") punkte++;
+        if(document.getElementById('q5a').value === "A") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 5 (154 cm):</strong> Falsch. Gehört in <strong>Klasse A</strong>.</li>";
+        }
 
-        // Datenpaket für Google Sheets schnüren
+        if(document.getElementById('q5b').value === "C") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 5 (160 cm):</strong> Falsch. Gehört in <strong>Klasse C</strong>.</li>";
+        }
+
+        if(document.getElementById('q5c').value === "C") {
+            punkte++;
+        } else {
+            fehlerListe += "<li><strong>Aufgabe 5 (164 cm):</strong> Falsch. Gehört in <strong>Klasse C</strong>.</li>";
+        }
+
         const dataPayload = {
             name: name,
             klasse: klasse,
@@ -264,7 +334,6 @@
             max: 12
         };
 
-        // Daten an Google Sheets senden (mit angepasstem Content-Type als Text wegen CORS)
         fetch(GOOGLE_SHEET_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -274,7 +343,7 @@
             body: JSON.stringify(dataPayload)
         })
         .then(() => {
-            zeigeErgebnis(punkte);
+            zeigeErgebnis(punkte, fehlerListe);
         })
         .catch((error) => {
             console.error('Fehler:', error);
@@ -284,13 +353,29 @@
         });
     });
 
-    function zeigeErgebnis(punkte) {
+    function zeigeErgebnis(punkte, fehlerListe) {
         const resultDiv = document.getElementById('result');
         const form = document.getElementById('examForm');
         
         form.style.display = 'none';
         resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `Prüfung erfolgreich abgegeben!<br>Du hast ${punkte} von 12 möglichen Punkten erreicht.`;
+        
+        // Standard Erfolgsmeldung
+        let htmlContent = `Prüfung erfolgreich abgegeben!<br>Du hast ${punkte} von 12 möglichen Punkten erreicht.`;
+
+        // Fehler-Feedback hinzufügen, falls nicht die volle Punktzahl erreicht wurde
+        if (punkte < 12) {
+            htmlContent += `
+                <div class="feedback-box">
+                    <strong>Hier ist die Übersicht deiner Fehler:</strong>
+                    <ul>${fehlerListe}</ul>
+                </div>
+            `;
+        } else {
+            htmlContent += `<br><br>🎉 <strong>Hervorragend! Du hast alles richtig beantwortet!</strong>`;
+        }
+
+        resultDiv.innerHTML = htmlContent;
     }
 </script>
 

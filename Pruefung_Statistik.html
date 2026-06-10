@@ -208,8 +208,8 @@
 </div>
 
 <script>
-    // HIER DEINE GOOGLE APPS SCRIPT WEB APP URL EINTRAGEN:
-    const GOOGLE_SHEET_WEB_APP_URL = https://script.google.com/macros/s/AKfycby-A0qUND3OlV9Z8qsQqJZISapFAlIYoVIVR47U4HcvvlubRT0ZUvOwBQDTXaU21XdBGg/exec;
+    // Eingefügte Google Apps Script Web App URL
+    const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycby-A0qUND3OlV9Z8qsQqJZISapFAlIYoVIVR47U4HcvvlubRT0ZUvOwBQDTXaU21XdBGg/exec";
 
     // Hilfsfunktion zum Bereinigen von Zahlen (macht Komma zu Punkt für die Prüfung)
     function cleanNumber(str) {
@@ -264,17 +264,12 @@
             max: 12
         };
 
-        if (GOOGLE_SHEET_WEB_APP_URL === "DEINE_URL_HIER_EINTRAGEN") {
-            zeigeErgebnis(punkte);
-            alert("Achtung: Die Google Sheets URL fehlt noch im Code! Die Punkte wurden nur lokal berechnet.");
-            return;
-        }
-
+        // Daten an Google Sheets senden (mit angepasstem Content-Type als Text wegen CORS)
         fetch(GOOGLE_SHEET_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'text/plain;charset=utf-8', 
             },
             body: JSON.stringify(dataPayload)
         })

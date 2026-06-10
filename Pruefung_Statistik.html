@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik Prüfung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+        .question {
+            background: #eaf2f8;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-left: 5px solid #3498db;
+            border-radius: 4px;
+        }
+        .question-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .sub-question {
+            margin-top: 15px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Prüfung: Statistik</h1>
+    <p>Bitte fülle alle Felder aus. Achte bei Kommazahlen darauf, dass du sie korrekt eingibst. Insgesamt können 12 Punkte erreicht werden (1 Punkt pro Eingabefeld).</p>
+
+    <form id="examForm">
+        <div class="form-group">
+            <label for="studentName">Vor- und Nachname:</label>
+            <input type="text" id="studentName" required placeholder="z.B. Max Mustermann">
+        </div>
+        <div class="form-group">
+            <label for="studentClass">Klasse:</label>
+            <input type="text" id="studentClass" required placeholder="z.B. 3A">
+        </div>
+
+        <div class="question">
+            <div class="question-title">Aufgabe 1: Arithmetisches Mittel und Ausreißer</div>
+            <p>Eine Wetterstation misst an fünf aufeinanderfolgenden Tagen folgende Temperaturen (in °C): <strong>12; 14; 13; 15; 31</strong>.</p>
+            
+            <div class="sub-question">
+                <label for="q1a">a) Welcher dieser Werte stellt einen Ausreißer dar?</label>
+                <input type="text" id="q1a" required placeholder="Zahl eingeben">
+            </div>
+            <div class="sub-question">
+                <label for="q1b">b) Berechne das arithmetische Mittel aller fünf Werte.</label>
+                <input type="text" id="q1b" required placeholder="Ergebnis eingeben">
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-title">Aufgabe 2: Rangliste und Zentralwert</div>
+            <p>Bei einem Reaktionstest wurden folgende Zeiten (in Sekunden) gemessen: <strong>0,8; 1,4; 0,3; 0,5; 0,5</strong>.</p>
+            
+            <div class="sub-question">
+                <label for="q2a">a) Erstelle eine geordnete Rangliste dieser Werte. (Trenne die Zahlen mit einem Strichpunkt ";")</label>
+                <input type="text" id="q2a" required placeholder="z.B. 0,1; 0,2; 0,3...">
+            </div>
+            <div class="sub-question">
+                <label for="q2b">b) Bestimme den Zentralwert (Median) dieser Datenreihe.</label>
+                <input type="text" id="q2b" required placeholder="Ergebnis eingeben">
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-title">Aufgabe 3: Modalwert und Spannweite</div>
+            <p>Eine Handballmannschaft erzielt in sieben Spielen folgende Anzahl an Toren: <strong>22; 20; 21; 22; 22; 24; 21</strong>.</p>
+            
+            <div class="sub-question">
+                <label for="q3a">a) Bestimme den Modalwert der geworfenen Tore.</label>
+                <input type="text" id="q3a" required placeholder="Ergebnis eingeben">
+            </div>
+            <div class="sub-question">
+                <label for="q3b">b) Berechne die Spannweite (R) der Tore.</label>
+                <input type="text" id="q3b" required placeholder="Ergebnis eingeben">
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-title">Aufgabe 4: Absolute, relative und prozentuelle Häufigkeit</div>
+            <p>In einer Klasse von 25 Jugendlichen haben genau 5 Personen angegeben, dass ihr Lieblingsfach Mathematik ist.</p>
+            
+            <div class="sub-question">
+                <label for="q4a">a) Wie lautet die absolute Häufigkeit?</label>
+                <input type="text" id="q4a" required placeholder="Zahl eingeben">
+            </div>
+            <div class="sub-question">
+                <label for="q4b">b) Berechne die relative Häufigkeit als Dezimalzahl.</label>
+                <input type="text" id="q4b" required placeholder="Dezimalzahl eingeben">
+            </div>
+            <div class="sub-question">
+                <label for="q4c">c) Gib die prozentuelle Häufigkeit an. (Zahl ohne %-Zeichen)</label>
+                <input type="text" id="q4c" required placeholder="Prozentzahl eingeben">
+            </div>
+        </div>
+
+        <div class="question">
+            <div class="question-title">Aufgabe 5: Klasseneinteilung</div>
+            <p>Ordne jeden dieser drei Werte (154, 160, 164) in die exakt passende Klasse ein.</p>
+            
+            <div class="sub-question">
+                <label for="q5a">Wert: 154 cm</label>
+                <select id="q5a" required>
+                    <option value="" disabled selected>Bitte wählen...</option>
+                    <option value="A">Klasse A: 150 - 154</option>
+                    <option value="B">Klasse B: 155 - 159</option>
+                    <option value="C">Klasse C: 160 - 164</option>
+                    <option value="D">Klasse D: 165 - 169</option>
+                </select>
+            </div>
+            <div class="sub-question">
+                <label for="q5b">Wert: 160 cm</label>
+                <select id="q5b" required>
+                    <option value="" disabled selected>Bitte wählen...</option>
+                    <option value="A">Klasse A: 150 - 154</option>
+                    <option value="B">Klasse B: 155 - 159</option>
+                    <option value="C">Klasse C: 160 - 164</option>
+                    <option value="D">Klasse D: 165 - 169</option>
+                </select>
+            </div>
+            <div class="sub-question">
+                <label for="q5c">Wert: 164 cm</label>
+                <select id="q5c" required>
+                    <option value="" disabled selected>Bitte wählen...</option>
+                    <option value="A">Klasse A: 150 - 154</option>
+                    <option value="B">Klasse B: 155 - 159</option>
+                    <option value="C">Klasse C: 160 - 164</option>
+                    <option value="D">Klasse D: 165 - 169</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Prüfung abgeben</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    // HIER DEINE GOOGLE APPS SCRIPT WEB APP URL EINTRAGEN:
+    const GOOGLE_SHEET_WEB_APP_URL = "DEINE_URL_HIER_EINTRAGEN";
+
+    // Hilfsfunktion zum Bereinigen von Zahlen (macht Komma zu Punkt für die Prüfung)
+    function cleanNumber(str) {
+        return str.trim().replace(',', '.').replace('%', '');
+    }
+
+    // Hilfsfunktion zum Bereinigen der Rangliste (entfernt Leerzeichen)
+    function cleanList(str) {
+        return str.replace(/\s+/g, '').replace(/\./g, ',');
+    }
+
+    document.getElementById('examForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "Wird gesendet...";
+
+        // Daten auslesen
+        const name = document.getElementById('studentName').value;
+        const klasse = document.getElementById('studentClass').value;
+        
+        let punkte = 0;
+
+        // Auswertung Aufgabe 1
+        if(document.getElementById('q1a').value.trim() === "31") punkte++;
+        if(cleanNumber(document.getElementById('q1b').value) === "17") punkte++;
+
+        // Auswertung Aufgabe 2
+        if(cleanList(document.getElementById('q2a').value) === "0,3;0,5;0,5;0,8;1,4") punkte++;
+        if(cleanNumber(document.getElementById('q2b').value) === "0.5") punkte++;
+
+        // Auswertung Aufgabe 3
+        if(document.getElementById('q3a').value.trim() === "22") punkte++;
+        if(document.getElementById('q3b').value.trim() === "4") punkte++;
+
+        // Auswertung Aufgabe 4
+        if(document.getElementById('q4a').value.trim() === "5") punkte++;
+        if(cleanNumber(document.getElementById('q4b').value) === "0.2") punkte++;
+        if(cleanNumber(document.getElementById('q4c').value) === "20") punkte++;
+
+        // Auswertung Aufgabe 5
+        if(document.getElementById('q5a').value === "A") punkte++;
+        if(document.getElementById('q5b').value === "C") punkte++;
+        if(document.getElementById('q5c').value === "C") punkte++;
+
+        // Datenpaket für Google Sheets schnüren
+        const dataPayload = {
+            name: name,
+            klasse: klasse,
+            total: punkte,
+            max: 12
+        };
+
+        if (GOOGLE_SHEET_WEB_APP_URL === "DEINE_URL_HIER_EINTRAGEN") {
+            zeigeErgebnis(punkte);
+            alert("Achtung: Die Google Sheets URL fehlt noch im Code! Die Punkte wurden nur lokal berechnet.");
+            return;
+        }
+
+        fetch(GOOGLE_SHEET_WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataPayload)
+        })
+        .then(() => {
+            zeigeErgebnis(punkte);
+        })
+        .catch((error) => {
+            console.error('Fehler:', error);
+            alert("Es gab einen Fehler beim Senden der Daten. Bitte wende dich an die Lehrkraft.");
+            btn.disabled = false;
+            btn.innerText = "Prüfung abgeben";
+        });
+    });
+
+    function zeigeErgebnis(punkte) {
+        const resultDiv = document.getElementById('result');
+        const form = document.getElementById('examForm');
+        
+        form.style.display = 'none';
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `Prüfung erfolgreich abgegeben!<br>Du hast ${punkte} von 12 möglichen Punkten erreicht.`;
+    }
+</script>
+
+</body>
+</html>

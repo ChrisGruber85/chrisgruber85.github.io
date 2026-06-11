@@ -50,16 +50,18 @@
         button:hover { background-color: #2ecc71; }
         button:disabled { background-color: #95a5a6; cursor: not-allowed; }
         
-        #sendToTeacherBtn { background-color: #2980b9; }
+        #sendToTeacherBtn { background-color: #2980b9; margin-top: 30px; font-weight: bold; }
         #sendToTeacherBtn:hover { background-color: #3498db; }
 
-        /* Review Styles */
+        /* Review Styles - Neu nach deinen Vorgaben */
         #reviewScreen, #finalScreen { display: none; text-align: left; }
-        .review-box { background: #fff; border: 1px solid #eee; border-radius: 4px; padding: 20px; margin-top: 20px; }
-        .review-item { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
-        .ans-correct { color: #27ae60; font-weight: bold; }
-        .ans-incorrect { color: #c0392b; font-weight: bold; }
-        .ans-correction { color: #2980b9; font-style: normal; margin-left: 10px; }
+        .review-box { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 20px; margin-top: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .review-item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #eee; font-size: 1.1em; }
+        .review-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .ans-correct { color: #27ae60; font-weight: bold; } /* Grün */
+        .ans-incorrect { color: #c0392b; font-weight: bold; } /* Rot */
+        .ans-correction { color: #2980b9; font-style: italic; margin-left: 10px; } /* Blau */
 
         /* Grade Styles */
         .grade-display { font-size: 1.5em; font-weight: bold; margin: 20px auto; padding: 12px 25px; border-radius: 6px; display: inline-block; text-align: center;}
@@ -89,25 +91,25 @@
 
             <div class="question">
                 <div class="question-title">Aufgabe 1: Arithmetisches Mittel und Ausreißer</div>
-                <div class="sub-question"><label>a) Welcher dieser Werte stellt einen Ausreißer dar?</label><input type="text" id="q1a" required></div>
+                <div class="sub-question"><label>a) Welcher dieser Werte stellt einen Ausreißer dar? (Werte: 12; 14; 13; 15; 31)</label><input type="text" id="q1a" required></div>
                 <div class="sub-question"><label>b) Berechne das arithmetische Mittel aller fünf Werte.</label><input type="text" id="q1b" required></div>
             </div>
 
             <div class="question">
                 <div class="question-title">Aufgabe 2: Rangliste und Zentralwert</div>
-                <div class="sub-question"><label>a) Erstelle eine geordnete Rangliste (Trennen mit ";")</label><input type="text" id="q2a" required></div>
+                <div class="sub-question"><label>a) Erstelle eine geordnete Rangliste (Werte: 0,8; 1,4; 0,3; 0,5; 0,5 - Trennen mit ";")</label><input type="text" id="q2a" required></div>
                 <div class="sub-question"><label>b) Bestimme den Zentralwert (Median).</label><input type="text" id="q2b" required></div>
             </div>
 
             <div class="question">
                 <div class="question-title">Aufgabe 3: Modalwert und Spannweite</div>
-                <div class="sub-question"><label>a) Bestimme den Modalwert.</label><input type="text" id="q3a" required></div>
+                <div class="sub-question"><label>a) Bestimme den Modalwert. (Tore: 22; 20; 21; 22; 22; 24; 21)</label><input type="text" id="q3a" required></div>
                 <div class="sub-question"><label>b) Berechne die Spannweite (R).</label><input type="text" id="q3b" required></div>
             </div>
 
             <div class="question">
                 <div class="question-title">Aufgabe 4: Häufigkeiten</div>
-                <div class="sub-question"><label>a) Absolute Häufigkeit?</label><input type="text" id="q4a" required></div>
+                <div class="sub-question"><label>a) Absolute Häufigkeit? (Klasse: 25, Note "Sehr gut": 5)</label><input type="text" id="q4a" required></div>
                 <div class="sub-question"><label>b) Relative Häufigkeit (Dezimalzahl)?</label><input type="text" id="q4b" required></div>
                 <div class="sub-question"><label>c) Prozentuelle Häufigkeit (Zahl ohne %)?</label><input type="text" id="q4c" required></div>
             </div>
@@ -151,12 +153,12 @@
         <div class="review-box" id="reviewContent">
             </div>
 
-        <button id="sendToTeacherBtn">E-Mail-Programm öffnen & Senden</button>
+        <button id="sendToTeacherBtn">Auswertung an den Lehrer senden</button>
     </div>
 
     <div id="finalScreen" class="center-text">
         <h2 style="color: #27ae60;">E-Mail-Programm geöffnet!</h2>
-        <p>Dein E-Mail-Programm (z.B. Outlook) sollte sich nun geöffnet haben. Bitte sende die dort erstellte E-Mail ab.<br><br>Deine Auswertung wurde zusätzlich in der Tabelle von Herrn Gruber gespeichert.</p>
+        <p>Dein E-Mail-Programm (z.B. Outlook) sollte sich nun geöffnet haben. Bitte sende die dort erstellte E-Mail ab.</p>
     </div>
 
 </div>
@@ -167,7 +169,7 @@
     function cleanNumber(str) { return str.trim().replace(',', '.').replace('%', ''); }
     function cleanList(str) { return str.replace(/\s+/g, '').replace(/\./g, ','); }
 
-    // Globale Variable zum Speichern des Payloads für den Versand
+    // Globale Variable zum Speichern des Payloads für den E-Mail-Versand
     let finalPayload = {};
 
     document.getElementById('examForm').addEventListener('submit', function(e) {
@@ -196,17 +198,19 @@
         let htmlReview = "";
         let textForEmail = "";
 
-        // HTML und E-Mail Text aufbauen
+        // HTML und E-Mail Text exakt aufbauen
         evaluations.forEach(item => {
             let answerText = item.user === "" ? "[Keine Eingabe]" : item.user;
             
             if (item.isMatch) {
                 punkte++;
+                // Bei richtig: Text grün
                 htmlReview += `<div class="review-item"><strong>Aufgabe ${item.id}:</strong> <span class="ans-correct">${answerText}</span></div>`;
                 textForEmail += `Aufgabe ${item.id}: ${answerText} (Richtig)\n`;
             } else {
-                htmlReview += `<div class="review-item"><strong>Aufgabe ${item.id}:</strong> <span class="ans-incorrect">${answerText}</span> <span class="ans-correction">richtig wäre gewesen "${item.correct}"</span></div>`;
-                textForEmail += `Aufgabe ${item.id}: ${answerText} (Falsch! Richtig wäre: ${item.correct})\n`;
+                // Bei falsch: Text rot + Korrekturhinweis in blau
+                htmlReview += `<div class="review-item"><strong>Aufgabe ${item.id}:</strong> <span class="ans-incorrect">${answerText}</span> <br><span class="ans-correction">richtig wäre gewesen "${item.correct}"</span></div>`;
+                textForEmail += `Aufgabe ${item.id}: ${answerText} (Falsch! Richtig wäre gewesen: "${item.correct}")\n`;
             }
         });
 
@@ -217,7 +221,7 @@
         else if (punkte >= 6) { gradeSymbol = "~"; gradeText = "Mittel"; gradeClass = "grade-mittel"; } 
         else { gradeSymbol = "-"; gradeText = "Negativ"; gradeClass = "grade-minus"; }
 
-        // UI für Review vorbereiten
+        // UI für Review Screen einblenden
         document.getElementById('inputScreen').style.display = 'none';
         document.getElementById('reviewScreen').style.display = 'block';
         
@@ -227,7 +231,7 @@
         gBox.innerHTML = `Bewertung: ${gradeSymbol} &nbsp;(${gradeText})`;
         document.getElementById('reviewContent').innerHTML = htmlReview;
 
-        // Payload für den endgültigen Versand vorbereiten
+        // Payload für das Google Sheet und die E-Mail speichern
         finalPayload = {
             name: name,
             klasse: klasse,
@@ -240,13 +244,13 @@
         window.scrollTo(0,0);
     });
 
-    // Event Listener für den "E-Mail-Programm öffnen" Button
+    // Event Listener für den Mail-Senden-Button
     document.getElementById('sendToTeacherBtn').addEventListener('click', function() {
         const btn = this;
         btn.disabled = true;
         btn.innerText = "Öffne E-Mail-Programm...";
 
-        // 1. Daten im Hintergrund ans Google Sheet senden (als Sicherheit/Übersicht)
+        // 1. Daten still im Hintergrund ans Google Sheet senden (als Sicherheit/Übersicht)
         fetch(GOOGLE_SHEET_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -256,23 +260,22 @@
             body: JSON.stringify(finalPayload)
         }).catch((error) => console.error('Fehler beim Speichern ins Google Sheet:', error));
 
-        // 2. E-Mail vorbereiten
+        // 2. E-Mail für Outlook vorbereiten
         const empfaenger = "christoph.gruber@edu.magwien.gv.at";
         const betreff = encodeURIComponent(`Prüfungsabgabe Statistik: ${finalPayload.name} (${finalPayload.klasse})`);
         
-        // E-Mail-Text formatieren
         const nachrichtText = `Guten Tag Herr Gruber,\n\nhier ist meine Auswertung zur Statistik-Prüfung:\n\n` +
-                              `Schüler/in: ${finalPayload.name}\n` +
+                              `Name: ${finalPayload.name}\n` +
                               `Klasse: ${finalPayload.klasse}\n` +
                               `Ergebnis: ${finalPayload.total} von ${finalPayload.max} Punkten\n` +
-                              `Note/Bewertung: ${finalPayload.note}\n\n` +
-                              `--- Detailauswertung ---\n` +
+                              `Note: ${finalPayload.note}\n\n` +
+                              `--- Übersicht der Antworten ---\n` +
                               `${finalPayload.fehler}\n\n` +
                               `Mit freundlichen Grüßen,\n${finalPayload.name}`;
                               
         const body = encodeURIComponent(nachrichtText);
 
-        // 3. Mailto-Link ausführen (Öffnet Outlook/Apple Mail etc.)
+        // 3. Mailto-Link ausführen (Öffnet Outlook)
         window.location.href = `mailto:${empfaenger}?subject=${betreff}&body=${body}`;
 
         // 4. Abschluss-Screen anzeigen

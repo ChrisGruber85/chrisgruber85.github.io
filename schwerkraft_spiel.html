@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physik-Spielplatz: Schwerkraft & Sprungkraft</title>
+    <title>Physik-Spielplatz: Schwerkraft, Sprung & Gewicht</title>
     <style>
         :root {
             --bg-color: #f4f7fe;
@@ -238,7 +238,7 @@
 
     <header>
         <h1>⚡ Physik-Spielplatz</h1>
-        <p>Tippe oder klicke auf das Feld, um Bälle zu werfen!</p>
+        <p>Erstelle Bälle mit unterschiedlichem Gewicht und teste die Schwerkraft!</p>
     </header>
 
     <div class="main-container">
@@ -258,7 +258,19 @@
             </div>
 
             <div>
-                <div class="section-title">Physik-Einstellungen</div>
+                <div class="section-title">Neue Bälle anpassen</div>
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>⚖️ Gewicht / Größe</span>
+                        <span class="value-badge" id="mass-val">Mittel</span>
+                    </div>
+                    <input type="range" id="mass-slider" min="10" max="60" step="5" value="25">
+                    <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: -5px;">Bestimmt das Gewicht der Bälle, die du neu erstellst.</small>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Umwelt-Einstellungen</div>
                 
                 <div class="control-group">
                     <div class="label-row">
@@ -268,7 +280,7 @@
                     <input type="range" id="gravity-slider" min="0" max="30" step="0.5" value="9.8">
 
                     <div class="label-row" style="margin-top: 10px;">
-                        <span>🏀 Sprungkraft (Bounciness)</span>
+                        <span>🏀 Sprungkraft</span>
                         <span class="value-badge" id="bounce-val">80%</span>
                     </div>
                     <input type="range" id="bounce-slider" min="0" max="1" step="0.05" value="0.8">
@@ -294,13 +306,13 @@
             <div>
                 <div class="section-title">Aktionen</div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn btn-primary btn-full" onclick="addMultipleBalls(10)">🎉 10 Bälle erzeugen</button>
+                    <button class="btn btn-primary btn-full" onclick="addMultipleBalls(5)">🎉 5 Bälle erzeugen</button>
                     <button class="btn btn-danger btn-full" onclick="clearBalls()">🗑️ Alle Bälle löschen</button>
                 </div>
             </div>
 
             <div class="hint-box">
-                💡 <strong>Tipp für die Stunde:</strong> Ziehe an den Bällen, um sie zu schleudern! Vergleiche, wie hoch Bälle auf dem Mond vs. Jupiter hüpfen.
+                💡 <strong>Experimentier-Tipp:</strong> Stelle das Gewicht auf "Leicht", erstelle einen Ball, dann auf "Schwer" und erstelle noch einen. Lass sie zusammenprallen!
             </div>
 
         </div>
@@ -317,6 +329,8 @@
         const bounceVal = document.getElementById('bounce-val');
         const frictionSlider = document.getElementById('friction-slider');
         const frictionVal = document.getElementById('friction-val');
+        const massSlider = document.getElementById('mass-slider');
+        const massVal = document.getElementById('mass-val');
         const ballCountEl = document.getElementById('ball-count');
         const fpsEl = document.getElementById('fps-count');
 
@@ -324,6 +338,7 @@
         let gravity = parseFloat(gravitySlider.value);
         let bounce = parseFloat(bounceSlider.value);
         let airFriction = parseFloat(frictionSlider.value);
+        let currentSpawnRadius = parseInt(massSlider.value);
         let wallFriction = 0.98;
 
         let balls = [];
@@ -339,13 +354,13 @@
         ];
 
         class Ball {
-            constructor(x, y, radius = Math.random() * 15 + 15) {
+            constructor(x, y, radius = currentSpawnRadius) {
                 this.x = x;
                 this.y = y;
                 this.vx = (Math.random() - 0.5) * 10;
                 this.vy = (Math.random() - 0.5) * 10;
                 this.radius = radius;
-                this.mass = radius * 0.1;
+                this.mass = radius * radius * 0.05; // Mass scales with area
                 this.color = colors[Math.floor(Math.random() * colors.length)];
                 this.isGrabbed = false;
             }
@@ -425,13 +440,22 @@
                         let nx = dx / (distance || 1);
                         let ny = dy / (distance || 1);
 
-                        if (!b1.isGrabbed) {
-                            b1.x -= nx * overlap * 0.5;
-                            b1.y -= ny * overlap * 0.5;
-                        }
-                        if (!b2.isGrabbed) {
-                            b2.x += nx * overlap * 0.5;
-                            b2.y += ny * overlap * 0.5;
+                        // Push objects apart based on relative mass
+                        let totalMass = b1.mass + b2.mass;
+                        let r1 = b2.mass / totalMass;
+                        let r2 = b1.mass / totalMass;
+
+                        if (!b1.isGrabbed && !b2.isGrabbed) {
+                            b1.x -= nx * overlap * r1;
+                            b1.y -= ny * overlap * r1;
+                            b2.x += nx * overlap * r2;
+                            b2.y += ny * overlap * r2;
+                        } else if (!b1.isGrabbed) {
+                            b1.x -= nx * overlap;
+                            b1.y -= ny * overlap;
+                        } else if (!b2.isGrabbed) {
+                            b2.x += nx * overlap;
+                            b2.y += ny * overlap;
                         }
 
                         // Elastic collision velocity exchange
@@ -460,8 +484,8 @@
         resizeCanvas();
 
         // Initial Balls
-        for (let i = 0; i < 5; i++) {
-            balls.push(new Ball(canvas.width * 0.2 + i * 80, 100));
+        for (let i = 0; i < 3; i++) {
+            balls.push(new Ball(canvas.width * 0.2 + i * 100, 100, Math.random() * 20 + 15));
         }
 
         // Mouse & Touch Interactivity
@@ -490,7 +514,7 @@
                 }
             }
 
-            // If clicked empty space, spawn new ball
+            // If clicked empty space, spawn new ball with current weight setting
             let newBall = new Ball(pos.x, pos.y);
             balls.push(newBall);
             draggedBall = newBall;
@@ -551,6 +575,13 @@
             else frictionVal.textContent = 'Stark';
         });
 
+        massSlider.addEventListener('input', (e) => {
+            currentSpawnRadius = parseInt(e.target.value);
+            if (currentSpawnRadius <= 20) massVal.textContent = 'Leicht';
+            else if (currentSpawnRadius <= 40) massVal.textContent = 'Mittel';
+            else massVal.textContent = 'Schwer';
+        });
+
         function setPreset(g, b, name) {
             gravity = g;
             bounce = b;
@@ -601,7 +632,7 @@
 
             ballCountEl.textContent = balls.length;
 
-            requestAnimationFrame(animate);
+            requestAnimationFrame(requestAnimationFrame(animate));
         }
 
         requestAnimationFrame(animate);
@@ -610,8 +641,8 @@
 </html>
 """
 
-filename = "physik_spielplatz_schwerkraft_sprungkraft.html"
-with open(filename, "w", encoding="utf-8") as f:
-    f.write(html_code)
+filename_v2 = "physik_spielplatz_v2.html"
+with open(filename_v2, "w", encoding="utf-8") as f:
+    f.write(html_code_v2)
 
-print(f"File created successfully: {filename}")
+print(f"File created successfully: {filename_v2}")

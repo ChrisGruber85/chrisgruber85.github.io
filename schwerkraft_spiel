@@ -1,0 +1,617 @@
+html_code = """<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physik-Spielplatz: Schwerkraft & Sprungkraft</title>
+    <style>
+        :root {
+            --bg-color: #f4f7fe;
+            --panel-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #06b6d4;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+
+        #sim-canvas {
+            flex: 1;
+            background: #ffffff;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.03);
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .control-group {
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .value-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #cbd5e1;
+            outline: none;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .stats-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .hint-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85rem;
+            color: #1e40af;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ Physik-Spielplatz</h1>
+        <p>Tippe oder klicke auf das Feld, um Bälle zu werfen!</p>
+    </header>
+
+    <div class="main-container">
+        <canvas id="sim-canvas"></canvas>
+
+        <div class="sidebar">
+            
+            <div class="stats-box">
+                <div class="stat-item">
+                    <span class="stat-value" id="ball-count">0</span>
+                    <span class="stat-label">Bälle im Spiel</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="fps-count">60</span>
+                    <span class="stat-label">FPS</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Physik-Einstellungen</div>
+                
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>🌍 Schwerkraft</span>
+                        <span class="value-badge" id="gravity-val">9.8 m/s²</span>
+                    </div>
+                    <input type="range" id="gravity-slider" min="0" max="30" step="0.5" value="9.8">
+
+                    <div class="label-row" style="margin-top: 10px;">
+                        <span>🏀 Sprungkraft (Bounciness)</span>
+                        <span class="value-badge" id="bounce-val">80%</span>
+                    </div>
+                    <input type="range" id="bounce-slider" min="0" max="1" step="0.05" value="0.8">
+
+                    <div class="label-row" style="margin-top: 10px;">
+                        <span>💨 Luftwiderstand</span>
+                        <span class="value-badge" id="friction-val">Gering</span>
+                    </div>
+                    <input type="range" id="friction-slider" min="0" max="0.05" step="0.005" value="0.005">
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Planeten-Presets</div>
+                <div class="preset-grid">
+                    <button class="btn" onclick="setPreset(1.6, 0.8, 'Mond 🌙')">🌙 Mond</button>
+                    <button class="btn" onclick="setPreset(9.8, 0.8, 'Erde 🌍')">🌍 Erde</button>
+                    <button class="btn" onclick="setPreset(24.8, 0.8, 'Jupiter 🪐')">🪐 Jupiter</button>
+                    <button class="btn" onclick="setPreset(0, 0.95, 'Schwerelos 🚀')">🚀 Weltall</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Aktionen</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="btn btn-primary btn-full" onclick="addMultipleBalls(10)">🎉 10 Bälle erzeugen</button>
+                    <button class="btn btn-danger btn-full" onclick="clearBalls()">🗑️ Alle Bälle löschen</button>
+                </div>
+            </div>
+
+            <div class="hint-box">
+                💡 <strong>Tipp für die Stunde:</strong> Ziehe an den Bällen, um sie zu schleudern! Vergleiche, wie hoch Bälle auf dem Mond vs. Jupiter hüpfen.
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('sim-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // UI Elements
+        const gravitySlider = document.getElementById('gravity-slider');
+        const gravityVal = document.getElementById('gravity-val');
+        const bounceSlider = document.getElementById('bounce-slider');
+        const bounceVal = document.getElementById('bounce-val');
+        const frictionSlider = document.getElementById('friction-slider');
+        const frictionVal = document.getElementById('friction-val');
+        const ballCountEl = document.getElementById('ball-count');
+        const fpsEl = document.getElementById('fps-count');
+
+        // Physics State
+        let gravity = parseFloat(gravitySlider.value);
+        let bounce = parseFloat(bounceSlider.value);
+        let airFriction = parseFloat(frictionSlider.value);
+        let wallFriction = 0.98;
+
+        let balls = [];
+        let isDragging = false;
+        let draggedBall = null;
+        let dragOffset = { x: 0, y: 0 };
+        let mouseTrail = [];
+
+        // Colors palette for balls
+        const colors = [
+            '#ef4444', '#f97316', '#f59e0b', '#10b981', 
+            '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
+        ];
+
+        class Ball {
+            constructor(x, y, radius = Math.random() * 15 + 15) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.radius = radius;
+                this.mass = radius * 0.1;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.isGrabbed = false;
+            }
+
+            update(width, height) {
+                if (this.isGrabbed) return;
+
+                // Apply Gravity (scaled down for canvas pixel feel)
+                this.vy += gravity * 0.05;
+
+                // Apply Air Resistance
+                this.vx *= (1 - airFriction);
+                this.vy *= (1 - airFriction);
+
+                // Update Position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off Floor
+                if (this.y + this.radius > height) {
+                    this.y = height - this.radius;
+                    this.vy = -this.vy * bounce;
+                    this.vx *= wallFriction;
+                }
+
+                // Bounce off Ceiling
+                if (this.y - this.radius < 0) {
+                    this.y = this.radius;
+                    this.vy = -this.vy * bounce;
+                }
+
+                // Bounce off Right Wall
+                if (this.x + this.radius > width) {
+                    this.x = width - this.radius;
+                    this.vx = -this.vx * bounce;
+                }
+
+                // Bounce off Left Wall
+                if (this.x - this.radius < 0) {
+                    this.x = this.radius;
+                    this.vx = -this.vx * bounce;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+
+                // Highlight / 3D Glare
+                ctx.beginPath();
+                ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function resolveCollisions() {
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    let b1 = balls[i];
+                    let b2 = balls[j];
+
+                    let dx = b2.x - b1.x;
+                    let dy = b2.y - b1.y;
+                    let distance = Math.hypot(dx, dy);
+                    let minDist = b1.radius + b2.radius;
+
+                    if (distance < minDist) {
+                        // Overlap resolution
+                        let overlap = minDist - distance;
+                        let nx = dx / (distance || 1);
+                        let ny = dy / (distance || 1);
+
+                        if (!b1.isGrabbed) {
+                            b1.x -= nx * overlap * 0.5;
+                            b1.y -= ny * overlap * 0.5;
+                        }
+                        if (!b2.isGrabbed) {
+                            b2.x += nx * overlap * 0.5;
+                            b2.y += ny * overlap * 0.5;
+                        }
+
+                        // Elastic collision velocity exchange
+                        let kx = b1.vx - b2.vx;
+                        let ky = b1.vy - b2.vy;
+                        let p = 2 * (nx * kx + ny * ky) / (b1.mass + b2.mass);
+
+                        if (!b1.isGrabbed) {
+                            b1.vx -= p * b2.mass * nx * bounce;
+                            b1.vy -= p * b2.mass * ny * bounce;
+                        }
+                        if (!b2.isGrabbed) {
+                            b2.vx += p * b1.mass * nx * bounce;
+                            b2.vy += p * b1.mass * ny * bounce;
+                        }
+                    }
+                }
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Initial Balls
+        for (let i = 0; i < 5; i++) {
+            balls.push(new Ball(canvas.width * 0.2 + i * 80, 100));
+        }
+
+        // Mouse & Touch Interactivity
+        function getPointerPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function handlePointerDown(e) {
+            const pos = getPointerPos(e);
+            
+            // Check if clicked on a ball
+            for (let b of balls) {
+                let dist = Math.hypot(b.x - pos.x, b.y - pos.y);
+                if (dist < b.radius) {
+                    draggedBall = b;
+                    b.isGrabbed = true;
+                    dragOffset = { x: pos.x - b.x, y: pos.y - b.y };
+                    mouseTrail = [{ x: pos.x, y: pos.y, time: Date.now() }];
+                    return;
+                }
+            }
+
+            // If clicked empty space, spawn new ball
+            let newBall = new Ball(pos.x, pos.y);
+            balls.push(newBall);
+            draggedBall = newBall;
+            newBall.isGrabbed = true;
+            dragOffset = { x: 0, y: 0 };
+            mouseTrail = [{ x: pos.x, y: pos.y, time: Date.now() }];
+        }
+
+        function handlePointerMove(e) {
+            if (!draggedBall) return;
+            const pos = getPointerPos(e);
+            draggedBall.x = pos.x - dragOffset.x;
+            draggedBall.y = pos.y - dragOffset.y;
+
+            mouseTrail.push({ x: pos.x, y: pos.y, time: Date.now() });
+            if (mouseTrail.length > 5) mouseTrail.shift();
+        }
+
+        function handlePointerUp() {
+            if (!draggedBall) return;
+            
+            if (mouseTrail.length >= 2) {
+                let last = mouseTrail[mouseTrail.length - 1];
+                let first = mouseTrail[0];
+                let dt = (last.time - first.time) / 1000 || 0.016;
+                draggedBall.vx = (last.x - first.x) / (dt * 60);
+                draggedBall.vy = (last.y - first.y) / (dt * 60);
+            }
+
+            draggedBall.isGrabbed = false;
+            draggedBall = null;
+            mouseTrail = [];
+        }
+
+        canvas.addEventListener('mousedown', handlePointerDown);
+        canvas.addEventListener('mousemove', handlePointerMove);
+        window.addEventListener('mouseup', handlePointerUp);
+
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); handlePointerDown(e); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handlePointerMove(e); }, { passive: false });
+        window.addEventListener('touchend', handlePointerUp);
+
+        // Control Event Listeners
+        gravitySlider.addEventListener('input', (e) => {
+            gravity = parseFloat(e.target.value);
+            gravityVal.textContent = gravity + ' m/s²';
+        });
+
+        bounceSlider.addEventListener('input', (e) => {
+            bounce = parseFloat(e.target.value);
+            bounceVal.textContent = Math.round(bounce * 100) + '%';
+        });
+
+        frictionSlider.addEventListener('input', (e) => {
+            airFriction = parseFloat(e.target.value);
+            if (airFriction === 0) frictionVal.textContent = 'Keiner';
+            else if (airFriction < 0.02) frictionVal.textContent = 'Gering';
+            else frictionVal.textContent = 'Stark';
+        });
+
+        function setPreset(g, b, name) {
+            gravity = g;
+            bounce = b;
+            gravitySlider.value = g;
+            bounceSlider.value = b;
+            gravityVal.textContent = g + ' m/s²';
+            bounceVal.textContent = Math.round(b * 100) + '%';
+        }
+
+        function addMultipleBalls(count) {
+            for (let i = 0; i < count; i++) {
+                balls.push(new Ball(
+                    Math.random() * (canvas.width - 60) + 30,
+                    Math.random() * (canvas.height * 0.3) + 30
+                ));
+            }
+        }
+
+        function clearBalls() {
+            balls = [];
+        }
+
+        // Loop & FPS
+        let lastTime = performance.now();
+        let frameCount = 0;
+
+        function animate(now) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // FPS Counter
+            frameCount++;
+            if (now - lastTime >= 1000) {
+                fpsEl.textContent = frameCount;
+                frameCount = 0;
+                lastTime = now;
+            }
+
+            // Update & Draw Balls
+            for (let ball of balls) {
+                ball.update(canvas.width, canvas.height);
+            }
+
+            resolveCollisions();
+
+            for (let ball of balls) {
+                ball.draw();
+            }
+
+            ballCountEl.textContent = balls.length;
+
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
+"""
+
+filename = "physik_spielplatz_schwerkraft_sprungkraft.html"
+with open(filename, "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+print(f"File created successfully: {filename}")

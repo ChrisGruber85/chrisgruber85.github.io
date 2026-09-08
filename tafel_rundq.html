@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tafel-Clustering: Rechteck & Quadrat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Die grüne Tafel */
+        #board {
+            width: 100%;
+            max-width: 1200px;
+            flex-grow: 1;
+            background-color: #2c5e3b; /* Klassisches Tafel-Grün */
+            border: 8px solid #8b5a2b; /* Holzrahmen */
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Die verschiebbaren Kärtchen */
+        .card {
+            background-color: #fdfd96; /* Post-it Gelb */
+            padding: 15px 20px;
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.3);
+            border-bottom-right-radius: 15px 5px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            max-width: 200px;
+            transition: transform 0.1s;
+            z-index: 1;
+        }
+
+        .card:active {
+            cursor: grabbing;
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 4px 8px 10px rgba(0,0,0,0.4);
+            z-index: 1000; /* Kärtchen beim Ziehen in den Vordergrund bringen */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mathe-Detektive: Begriffs-Salat ordnen (Große Version)</h1>
+    <div id="board"></div>
+
+    <script>
+        // Die stark erweiterte Liste der Begriffe (30 Stück)
+        const terms = [
+            // Namen
+            "Quadrat",
+            "Rechteck",
+            
+            // Formeln
+            "A = a · b", 
+            "u = 4 · a", 
+            "A = a²", 
+            "u = 2·a + 2·b",
+            
+            // Seiten
+            "Gegenüberliegende Seiten gleich lang",
+            "Alle 4 Seiten gleich lang", 
+            "Gegenüberliegende Seiten sind parallel",
+            "4 Ecken und 4 Kanten",
+            
+            // Winkel
+            "4 rechte Winkel", 
+            "Winkelsumme 360°",
+            "Innenwinkel sind jeweils 90°",
+            "Benachbarte Winkel ergeben 180°",
+            
+            // Diagonalen
+            "Diagonalen halbieren sich",
+            "Diagonalen stehen senkrecht aufeinander", 
+            "Diagonalen sind gleich lang",
+            
+            // Symmetrie & Beziehungen
+            "Genau 2 Symmetrieachsen",
+            "Genau 4 Symmetrieachsen",
+            "Punktsymmetrisch",
+            "Jedes Quadrat ist ein Rechteck",
+            
+            // Unpassende Begriffe (Fallen für die Schüler)
+            "Winkelsumme 180°", 
+            "Radius",
+            "u = a · b",
+            "A = a + b",
+            "Jedes Rechteck ist ein Quadrat",
+            "Nur 2 rechte Winkel",
+            "Diagonalen sind verschieden lang",
+            "Genau ein Paar parallele Seiten",
+            "A = (a·h):2"
+        ];
+
+        const board = document.getElementById('board');
+
+        // Funktion, um Kärtchen zufällig auf der Tafel zu verteilen
+        function createCards() {
+            const boardWidth = board.clientWidth;
+            const boardHeight = board.clientHeight;
+
+            terms.forEach(term => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerText = term;
+
+                // Zufällige Position berechnen (mit etwas Abstand zum Rand)
+                const randomX = Math.random() * (boardWidth - 250) + 20;
+                const randomY = Math.random() * (boardHeight - 100) + 20;
+                
+                // Leichte, zufällige Drehung für eine natürlichere Optik
+                const randomRotate = (Math.random() - 0.5) * 10; 
+
+                card.style.left = `${randomX}px`;
+                card.style.top = `${randomY}px`;
+                card.style.transform = `rotate(${randomRotate}deg)`;
+
+                board.appendChild(card);
+            });
+        }
+
+        // --- Drag & Drop Logik für Maus UND Touch (Smartboard) ---
+        let activeCard = null;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        function startDrag(e) {
+            if (e.target.classList.contains('card')) {
+                activeCard = e.target;
+                
+                // Unterscheiden zwischen Maus und Touch
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+                const cardRect = activeCard.getBoundingClientRect();
+                offsetX = clientX - cardRect.left;
+                offsetY = clientY - cardRect.top;
+                
+                // Aktuelles Kärtchen nach ganz vorne holen
+                document.querySelectorAll('.card').forEach(c => c.style.zIndex = 1);
+                activeCard.style.zIndex = 1000;
+            }
+        }
+
+        function drag(e) {
+            if (activeCard) {
+                e.preventDefault(); // Verhindert Scrollen beim Ziehen auf Touchscreens
+                
+                const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                
+                const boardRect = board.getBoundingClientRect();
+                
+                // Neue Position berechnen (relativ zur Tafel)
+                let newX = clientX - boardRect.left - offsetX;
+                let newY = clientY - boardRect.top - offsetY;
+
+                activeCard.style.left = `${newX}px`;
+                activeCard.style.top = `${newY}px`;
+            }
+        }
+
+        function endDrag() {
+            activeCard = null;
+        }
+
+        // Event-Listener hinzufügen (Maus)
+        board.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Event-Listener hinzufügen (Touch für Tablets/Smartboards)
+        board.addEventListener('touchstart', startDrag, {passive: false});
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('touchend', endDrag);
+
+        // Warten, bis das Fenster geladen ist, damit die Tafelgröße bekannt ist
+        window.onload = createCards;
+        
+        // Kärtchen neu anordnen, wenn sich die Fenstergröße ändert
+        window.onresize = () => {
+            board.innerHTML = '';
+            createCards();
+        };
+    </script>
+</body>
+</html>
